@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Track and never miss your credit card benefits and rewards">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CC Rewards">
+    
+    <title>Credit Card Rewards Tracker</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="icons/icon-192.svg">
+    <link rel="apple-touch-icon" href="icons/icon-192.svg">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1>💳 Credit Card Rewards Tracker</h1>
+            <p class="subtitle">Track and never miss your credit card benefits</p>
+        </header>
+
+        <main class="main-content">
+            <div class="controls">
+                <button id="addRewardBtn" class="btn btn-primary">
+                    <span class="btn-icon">+</span> Add Reward
+                </button>
+                <div class="stats">
+                    <span class="stat">
+                        <span class="stat-value" id="unclaimedCount">0</span>
+                        <span class="stat-label">Unclaimed</span>
+                    </span>
+                    <span class="stat">
+                        <span class="stat-value" id="totalValue">$0</span>
+                        <span class="stat-label">Unclaimed Value</span>
+                    </span>
+                </div>
+            </div>
+
+            <div class="rewards-container">
+                <!-- Desktop Table View -->
+                <table class="rewards-table" id="rewardsTable">
+                    <thead>
+                        <tr>
+                            <th class="col-claimed">Claimed</th>
+                            <th class="col-name">Reward</th>
+                            <th class="col-card">Card</th>
+                            <th class="col-amount">Amount</th>
+                            <th class="col-recurrence">Recurrence</th>
+                            <th class="col-reset">Next Reset</th>
+                            <th class="col-actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rewardsBody">
+                        <!-- Rewards will be rendered here -->
+                    </tbody>
+                </table>
+
+                <!-- Mobile Card View -->
+                <div class="rewards-cards" id="rewardsCards">
+                    <!-- Mobile cards will be rendered here -->
+                </div>
+
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-icon">🎁</div>
+                    <h3>No rewards yet</h3>
+                    <p>Add your first credit card reward to start tracking!</p>
+                </div>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <p>Data saved locally in your browser</p>
+        </footer>
+    </div>
+
+    <!-- Add/Edit Reward Modal -->
+    <div class="modal-overlay" id="rewardModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Reward</h2>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <form id="rewardForm">
+                <input type="hidden" id="rewardId">
+
+                <div class="form-group">
+                    <label for="rewardName">Reward Name <span class="required">*</span></label>
+                    <input type="text" id="rewardName" required placeholder="e.g., Uber Credits">
+                </div>
+
+                <div class="form-group">
+                    <label for="cardName">Card Name</label>
+                    <input type="text" id="cardName" placeholder="e.g., Amex Gold">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="amount">Amount ($)</label>
+                        <input type="number" id="amount" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="recurrenceType">Recurrence <span class="required">*</span></label>
+                        <select id="recurrenceType" required>
+                            <option value="monthly">Monthly</option>
+                            <option value="quarterly">Quarterly</option>
+                            <option value="yearly">Yearly</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row custom-recurrence" id="customRecurrence" style="display: none;">
+                    <div class="form-group">
+                        <label for="customInterval">Every</label>
+                        <input type="number" id="customInterval" min="1" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="customUnit">Unit</label>
+                        <select id="customUnit">
+                            <option value="day">Day(s)</option>
+                            <option value="week">Week(s)</option>
+                            <option value="month">Month(s)</option>
+                            <option value="year">Year(s)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" rows="2" placeholder="Optional notes about this reward"></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Reward</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal modal-small">
+            <div class="modal-header">
+                <h2>Delete Reward</h2>
+                <button class="modal-close" id="closeDeleteModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete "<span id="deleteRewardName"></span>"?</p>
+                <p class="text-muted">This action cannot be undone.</p>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="cancelDeleteBtn">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="storage.js"></script>
+    <script src="recurrence.js"></script>
+    <script src="app.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('SW registered:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('SW registration failed:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+
+</html>
