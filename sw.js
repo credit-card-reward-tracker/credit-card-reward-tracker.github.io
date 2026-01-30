@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cc-rewards-v2';
+const CACHE_NAME = 'cc-rewards-v3';
 const urlsToCache = [
     './',
     './index.html',
@@ -6,6 +6,7 @@ const urlsToCache = [
     './app.js',
     './storage.js',
     './recurrence.js',
+    './auth.js',
     './manifest.json',
     './icons/icon-192.svg',
     './icons/icon-512.svg'

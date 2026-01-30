@@ -60,6 +60,82 @@ body {
     padding: 30px 0;
 }
 
+.header-top {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+}
+
+.user-section {
+    display: flex;
+    align-items: center;
+}
+
+.user-signed-in {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+}
+
+.user-name {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.btn-outline:hover {
+    background: var(--bg-hover);
+    border-color: var(--primary-color);
+}
+
+.btn-text {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 6px 12px;
+}
+
+.btn-text:hover {
+    color: var(--primary-color);
+    background: var(--bg-hover);
+}
+
+.btn-small {
+    padding: 8px 12px;
+    font-size: 0.875rem;
+}
+
+.google-icon {
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+.sync-hint {
+    font-size: 0.75rem;
+    color: var(--primary-color);
+    margin-top: 4px;
+}
+
+.sync-status-cloud {
+    color: var(--success-color);
+}
+
 .app-header h1 {
     font-size: 2rem;
     font-weight: 700;
