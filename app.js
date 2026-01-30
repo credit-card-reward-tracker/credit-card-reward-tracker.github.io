@@ -36,8 +36,8 @@ const App = (function () {
             cardsBody: document.getElementById('cardsBody'),
             cardsCards: document.getElementById('cardsCards'),
             emptyCardsState: document.getElementById('emptyCardsState'),
-            cardCount: document.getElementById('cardCount'),
-            totalFees: document.getElementById('totalFees'),
+            cardCount: document.getElementById('totalCards'),
+            totalFees: document.getElementById('totalAnnualFees'),
 
             // Auth UI
             signInBtn: document.getElementById('signInBtn'),
@@ -67,10 +67,10 @@ const App = (function () {
             customUnit: document.getElementById('customUnit'),
             description: document.getElementById('description'),
 
-            // Delete Reward Modal
+            // Delete Modal (unified for rewards and cards)
             deleteModal: document.getElementById('deleteModal'),
             closeDeleteModal: document.getElementById('closeDeleteModal'),
-            deleteRewardName: document.getElementById('deleteRewardName'),
+            deleteItemName: document.getElementById('deleteItemName'),
             cancelDeleteBtn: document.getElementById('cancelDeleteBtn'),
             confirmDeleteBtn: document.getElementById('confirmDeleteBtn'),
 
@@ -82,19 +82,12 @@ const App = (function () {
             cancelCardBtn: document.getElementById('cancelCardBtn'),
 
             // Card Form fields
-            formCardId: document.getElementById('formCardId'),
-            formCardName: document.getElementById('formCardName'),
-            formCardIssuer: document.getElementById('formCardIssuer'),
-            formCardOpenDate: document.getElementById('formCardOpenDate'),
-            formCardAnnualFee: document.getElementById('formCardAnnualFee'),
-            formCardNotes: document.getElementById('formCardNotes'),
-
-            // Delete Card Modal
-            deleteCardModal: document.getElementById('deleteCardModal'),
-            closeDeleteCardModal: document.getElementById('closeDeleteCardModal'),
-            deleteCardName: document.getElementById('deleteCardName'),
-            cancelDeleteCardBtn: document.getElementById('cancelDeleteCardBtn'),
-            confirmDeleteCardBtn: document.getElementById('confirmDeleteCardBtn')
+            formCardId: document.getElementById('cardId'),
+            formCardName: document.getElementById('cardNameInput'),
+            formCardIssuer: document.getElementById('cardIssuer'),
+            formCardOpenDate: document.getElementById('cardOpenDate'),
+            formCardAnnualFee: document.getElementById('cardAnnualFee'),
+            formCardNotes: document.getElementById('cardNotes')
         };
     }
 
@@ -139,12 +132,6 @@ const App = (function () {
         if (elements.cancelCardBtn) {
             elements.cancelCardBtn.addEventListener('click', closeCardModal);
         }
-        if (elements.closeDeleteCardModal) {
-            elements.closeDeleteCardModal.addEventListener('click', closeDeleteCardModal);
-        }
-        if (elements.cancelDeleteCardBtn) {
-            elements.cancelDeleteCardBtn.addEventListener('click', closeDeleteCardModal);
-        }
 
         // Form submissions
         elements.rewardForm.addEventListener('submit', handleFormSubmit);
@@ -155,11 +142,8 @@ const App = (function () {
         // Recurrence type change
         elements.recurrenceType.addEventListener('change', handleRecurrenceTypeChange);
 
-        // Delete confirmations
+        // Delete confirmation (unified for rewards and cards)
         elements.confirmDeleteBtn.addEventListener('click', handleDeleteConfirm);
-        if (elements.confirmDeleteCardBtn) {
-            elements.confirmDeleteCardBtn.addEventListener('click', handleDeleteCardConfirm);
-        }
 
         // Close modals on overlay click
         elements.rewardModal.addEventListener('click', (e) => {
@@ -182,21 +166,12 @@ const App = (function () {
             });
         }
 
-        if (elements.deleteCardModal) {
-            elements.deleteCardModal.addEventListener('click', (e) => {
-                if (e.target === elements.deleteCardModal) {
-                    closeDeleteCardModal();
-                }
-            });
-        }
-
         // Close modals on Escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeRewardModal();
                 closeDeleteModal();
                 closeCardModal();
-                closeDeleteCardModal();
             }
         });
     }
@@ -294,7 +269,8 @@ const App = (function () {
         }
 
         deleteRewardId = id;
-        elements.deleteRewardName.textContent = reward.title;
+        deleteCardId = null; // Clear card delete
+        elements.deleteItemName.textContent = reward.title;
         elements.deleteModal.classList.add('active');
     }
 
@@ -304,6 +280,7 @@ const App = (function () {
     function closeDeleteModal() {
         elements.deleteModal.classList.remove('active');
         deleteRewardId = null;
+        deleteCardId = null;
     }
 
     // =====================
@@ -366,17 +343,9 @@ const App = (function () {
         }
 
         deleteCardId = id;
-        elements.deleteCardName.textContent = card.name;
-        elements.deleteCardModal.classList.add('active');
-    }
-
-    /**
-     * Close delete card confirmation modal
-     */
-    function closeDeleteCardModal() {
-        if (!elements.deleteCardModal) return;
-        elements.deleteCardModal.classList.remove('active');
-        deleteCardId = null;
+        deleteRewardId = null; // Clear reward delete
+        elements.deleteItemName.textContent = card.name;
+        elements.deleteModal.classList.add('active');
     }
 
     /**
@@ -405,18 +374,6 @@ const App = (function () {
 
         closeCardModal();
         renderCards();
-    }
-
-    /**
-     * Handle delete card confirmation
-     */
-    function handleDeleteCardConfirm() {
-        if (deleteCardId) {
-            Storage.deleteCard(deleteCardId);
-            syncCardsToCloud();
-            closeDeleteCardModal();
-            renderCards();
-        }
     }
 
     /**
@@ -483,7 +440,7 @@ const App = (function () {
     }
 
     /**
-     * Handle delete confirmation
+     * Handle delete confirmation (unified for rewards and cards)
      */
     function handleDeleteConfirm() {
         if (deleteRewardId) {
@@ -491,6 +448,11 @@ const App = (function () {
             syncToCloud();
             closeDeleteModal();
             renderRewards();
+        } else if (deleteCardId) {
+            Storage.deleteCard(deleteCardId);
+            syncCardsToCloud();
+            closeDeleteModal();
+            renderCards();
         }
     }
 
@@ -1085,6 +1047,7 @@ const App = (function () {
         openEditModal,
         openDeleteModal,
         handleClaimedToggle,
+        openAddCardModal,
         openEditCardModal,
         openDeleteCardModal,
         testResetLogic,
