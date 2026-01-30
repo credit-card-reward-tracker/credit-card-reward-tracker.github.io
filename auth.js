@@ -6,12 +6,13 @@
 const Auth = (function () {
     // Firebase configuration - REPLACE WITH YOUR OWN CONFIG
     const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_PROJECT_ID.appspot.com",
-        messagingSenderId: "YOUR_SENDER_ID",
-        appId: "YOUR_APP_ID"
+        apiKey: "AIzaSyD7ugL_7stq3j_shG9mgONKb6g2D8ZaN5w",
+        authDomain: "cc-reward-tracker.firebaseapp.com",
+        projectId: "cc-reward-tracker",
+        storageBucket: "cc-reward-tracker.firebasestorage.app",
+        messagingSenderId: "761265744241",
+        appId: "1:761265744241:web:ba359bb0c74525e1d62ed0",
+        measurementId: "G-JM5YW1XTJG"
     };
 
     let app = null;
@@ -141,7 +142,7 @@ const Auth = (function () {
             if (doc.exists) {
                 const data = doc.data();
                 const rewards = data.rewards || [];
-                
+
                 // Notify callback with updated rewards
                 if (onRewardsUpdatedCallback) {
                     onRewardsUpdatedCallback(rewards);
@@ -211,7 +212,7 @@ const Auth = (function () {
         try {
             // Check if user already has rewards in cloud
             const cloudRewards = await loadRewardsFromCloud();
-            
+
             if (cloudRewards && cloudRewards.length === 0) {
                 // No cloud rewards, migrate local
                 await saveRewardsToCloud(localRewards);
