@@ -9,6 +9,7 @@ const App = (function () {
 
     // State
     let deleteRewardId = null;
+    let deleteCardId = null;
     let useCloudStorage = false;
 
     /**
@@ -16,7 +17,11 @@ const App = (function () {
      */
     function initElements() {
         elements = {
-            // Main UI
+            // Navigation
+            navTabs: document.querySelectorAll('.nav-tab'),
+            pages: document.querySelectorAll('.page'),
+
+            // Main UI - Rewards
             addRewardBtn: document.getElementById('addRewardBtn'),
             rewardsTable: document.getElementById('rewardsTable'),
             rewardsBody: document.getElementById('rewardsBody'),
@@ -24,6 +29,15 @@ const App = (function () {
             emptyState: document.getElementById('emptyState'),
             unclaimedCount: document.getElementById('unclaimedCount'),
             totalValue: document.getElementById('totalValue'),
+
+            // Main UI - Cards
+            addCardBtn: document.getElementById('addCardBtn'),
+            cardsTable: document.getElementById('cardsTable'),
+            cardsBody: document.getElementById('cardsBody'),
+            cardsCards: document.getElementById('cardsCards'),
+            emptyCardsState: document.getElementById('emptyCardsState'),
+            cardCount: document.getElementById('cardCount'),
+            totalFees: document.getElementById('totalFees'),
 
             // Auth UI
             signInBtn: document.getElementById('signInBtn'),
@@ -35,14 +49,14 @@ const App = (function () {
             syncStatus: document.getElementById('syncStatus'),
             syncHint: document.getElementById('syncHint'),
 
-            // Add/Edit Modal
+            // Add/Edit Reward Modal
             rewardModal: document.getElementById('rewardModal'),
             modalTitle: document.getElementById('modalTitle'),
             closeModal: document.getElementById('closeModal'),
             rewardForm: document.getElementById('rewardForm'),
             cancelBtn: document.getElementById('cancelBtn'),
 
-            // Form fields
+            // Reward Form fields
             rewardId: document.getElementById('rewardId'),
             rewardName: document.getElementById('rewardName'),
             cardName: document.getElementById('cardName'),
@@ -53,12 +67,34 @@ const App = (function () {
             customUnit: document.getElementById('customUnit'),
             description: document.getElementById('description'),
 
-            // Delete Modal
+            // Delete Reward Modal
             deleteModal: document.getElementById('deleteModal'),
             closeDeleteModal: document.getElementById('closeDeleteModal'),
             deleteRewardName: document.getElementById('deleteRewardName'),
             cancelDeleteBtn: document.getElementById('cancelDeleteBtn'),
-            confirmDeleteBtn: document.getElementById('confirmDeleteBtn')
+            confirmDeleteBtn: document.getElementById('confirmDeleteBtn'),
+
+            // Add/Edit Card Modal
+            cardModal: document.getElementById('cardModal'),
+            cardModalTitle: document.getElementById('cardModalTitle'),
+            closeCardModal: document.getElementById('closeCardModal'),
+            cardForm: document.getElementById('cardForm'),
+            cancelCardBtn: document.getElementById('cancelCardBtn'),
+
+            // Card Form fields
+            formCardId: document.getElementById('formCardId'),
+            formCardName: document.getElementById('formCardName'),
+            formCardIssuer: document.getElementById('formCardIssuer'),
+            formCardOpenDate: document.getElementById('formCardOpenDate'),
+            formCardAnnualFee: document.getElementById('formCardAnnualFee'),
+            formCardNotes: document.getElementById('formCardNotes'),
+
+            // Delete Card Modal
+            deleteCardModal: document.getElementById('deleteCardModal'),
+            closeDeleteCardModal: document.getElementById('closeDeleteCardModal'),
+            deleteCardName: document.getElementById('deleteCardName'),
+            cancelDeleteCardBtn: document.getElementById('cancelDeleteCardBtn'),
+            confirmDeleteCardBtn: document.getElementById('confirmDeleteCardBtn')
         };
     }
 
@@ -66,8 +102,21 @@ const App = (function () {
      * Initialize event listeners
      */
     function initEventListeners() {
+        // Navigation tabs
+        elements.navTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetPage = tab.dataset.page;
+                switchToPage(targetPage);
+            });
+        });
+
         // Add reward button
         elements.addRewardBtn.addEventListener('click', openAddModal);
+
+        // Add card button
+        if (elements.addCardBtn) {
+            elements.addCardBtn.addEventListener('click', openAddCardModal);
+        }
 
         // Auth buttons
         if (elements.signInBtn) {
@@ -77,20 +126,40 @@ const App = (function () {
             elements.signOutBtn.addEventListener('click', handleSignOut);
         }
 
-        // Modal close buttons
+        // Reward Modal close buttons
         elements.closeModal.addEventListener('click', closeRewardModal);
         elements.cancelBtn.addEventListener('click', closeRewardModal);
         elements.closeDeleteModal.addEventListener('click', closeDeleteModal);
         elements.cancelDeleteBtn.addEventListener('click', closeDeleteModal);
 
-        // Form submission
+        // Card Modal close buttons
+        if (elements.closeCardModal) {
+            elements.closeCardModal.addEventListener('click', closeCardModal);
+        }
+        if (elements.cancelCardBtn) {
+            elements.cancelCardBtn.addEventListener('click', closeCardModal);
+        }
+        if (elements.closeDeleteCardModal) {
+            elements.closeDeleteCardModal.addEventListener('click', closeDeleteCardModal);
+        }
+        if (elements.cancelDeleteCardBtn) {
+            elements.cancelDeleteCardBtn.addEventListener('click', closeDeleteCardModal);
+        }
+
+        // Form submissions
         elements.rewardForm.addEventListener('submit', handleFormSubmit);
+        if (elements.cardForm) {
+            elements.cardForm.addEventListener('submit', handleCardFormSubmit);
+        }
 
         // Recurrence type change
         elements.recurrenceType.addEventListener('change', handleRecurrenceTypeChange);
 
-        // Delete confirmation
+        // Delete confirmations
         elements.confirmDeleteBtn.addEventListener('click', handleDeleteConfirm);
+        if (elements.confirmDeleteCardBtn) {
+            elements.confirmDeleteCardBtn.addEventListener('click', handleDeleteCardConfirm);
+        }
 
         // Close modals on overlay click
         elements.rewardModal.addEventListener('click', (e) => {
@@ -105,13 +174,61 @@ const App = (function () {
             }
         });
 
+        if (elements.cardModal) {
+            elements.cardModal.addEventListener('click', (e) => {
+                if (e.target === elements.cardModal) {
+                    closeCardModal();
+                }
+            });
+        }
+
+        if (elements.deleteCardModal) {
+            elements.deleteCardModal.addEventListener('click', (e) => {
+                if (e.target === elements.deleteCardModal) {
+                    closeDeleteCardModal();
+                }
+            });
+        }
+
         // Close modals on Escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeRewardModal();
                 closeDeleteModal();
+                closeCardModal();
+                closeDeleteCardModal();
             }
         });
+    }
+
+    /**
+     * Switch to a specific page
+     */
+    function switchToPage(pageName) {
+        // Update nav tabs
+        elements.navTabs.forEach(tab => {
+            if (tab.dataset.page === pageName) {
+                tab.classList.add('active');
+            } else {
+                tab.classList.remove('active');
+            }
+        });
+
+        // Update pages
+        elements.pages.forEach(page => {
+            if (page.id === `page${capitalizeFirst(pageName)}`) {
+                page.classList.add('active');
+            } else {
+                page.classList.remove('active');
+            }
+        });
+    }
+
+    /**
+     * Capitalize first letter
+     */
+    function capitalizeFirst(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
     /**
@@ -187,6 +304,119 @@ const App = (function () {
     function closeDeleteModal() {
         elements.deleteModal.classList.remove('active');
         deleteRewardId = null;
+    }
+
+    // =====================
+    // Card Modal Functions
+    // =====================
+
+    /**
+     * Open the add card modal
+     */
+    function openAddCardModal() {
+        if (!elements.cardModal) return;
+        elements.cardModalTitle.textContent = 'Add Card';
+        elements.cardForm.reset();
+        elements.formCardId.value = '';
+        elements.cardModal.classList.add('active');
+        elements.formCardName.focus();
+    }
+
+    /**
+     * Open the edit card modal
+     * @param {string} id - Card ID to edit
+     */
+    function openEditCardModal(id) {
+        const card = Storage.getCardById(id);
+        if (!card) {
+            console.error('Card not found:', id);
+            return;
+        }
+
+        elements.cardModalTitle.textContent = 'Edit Card';
+        elements.formCardId.value = card.id;
+        elements.formCardName.value = card.name || '';
+        elements.formCardIssuer.value = card.issuer || '';
+        elements.formCardOpenDate.value = card.openDate || '';
+        elements.formCardAnnualFee.value = card.annualFee || '';
+        elements.formCardNotes.value = card.notes || '';
+
+        elements.cardModal.classList.add('active');
+        elements.formCardName.focus();
+    }
+
+    /**
+     * Close the card modal
+     */
+    function closeCardModal() {
+        if (!elements.cardModal) return;
+        elements.cardModal.classList.remove('active');
+        elements.cardForm.reset();
+    }
+
+    /**
+     * Open delete card confirmation modal
+     * @param {string} id - Card ID to delete
+     */
+    function openDeleteCardModal(id) {
+        const card = Storage.getCardById(id);
+        if (!card) {
+            console.error('Card not found:', id);
+            return;
+        }
+
+        deleteCardId = id;
+        elements.deleteCardName.textContent = card.name;
+        elements.deleteCardModal.classList.add('active');
+    }
+
+    /**
+     * Close delete card confirmation modal
+     */
+    function closeDeleteCardModal() {
+        if (!elements.deleteCardModal) return;
+        elements.deleteCardModal.classList.remove('active');
+        deleteCardId = null;
+    }
+
+    /**
+     * Handle card form submission
+     */
+    function handleCardFormSubmit(e) {
+        e.preventDefault();
+
+        const id = elements.formCardId.value;
+        const cardData = {
+            name: elements.formCardName.value.trim(),
+            issuer: elements.formCardIssuer.value.trim(),
+            openDate: elements.formCardOpenDate.value,
+            annualFee: parseFloat(elements.formCardAnnualFee.value) || 0,
+            notes: elements.formCardNotes.value.trim()
+        };
+
+        if (id) {
+            Storage.updateCard(id, cardData);
+        } else {
+            Storage.addCard(cardData);
+        }
+
+        // Sync to cloud if signed in
+        syncCardsToCloud();
+
+        closeCardModal();
+        renderCards();
+    }
+
+    /**
+     * Handle delete card confirmation
+     */
+    function handleDeleteCardConfirm() {
+        if (deleteCardId) {
+            Storage.deleteCard(deleteCardId);
+            syncCardsToCloud();
+            closeDeleteCardModal();
+            renderCards();
+        }
     }
 
     /**
@@ -275,12 +505,22 @@ const App = (function () {
     }
 
     /**
-     * Sync local storage to cloud
+     * Sync rewards to cloud
      */
     async function syncToCloud() {
         if (useCloudStorage && Auth.isSignedIn()) {
             const rewards = Storage.getRewards();
             await Auth.saveRewardsToCloud(rewards);
+        }
+    }
+
+    /**
+     * Sync cards to cloud
+     */
+    async function syncCardsToCloud() {
+        if (useCloudStorage && Auth.isSignedIn()) {
+            const cards = Storage.getCards();
+            await Auth.saveCardsToCloud(cards);
         }
     }
 
@@ -470,6 +710,136 @@ const App = (function () {
     }
 
     /**
+     * Render all cards
+     */
+    function renderCards() {
+        const cards = Storage.getCards();
+
+        // Update card stats
+        updateCardStats(cards);
+
+        // Show/hide empty state
+        if (cards.length === 0) {
+            if (elements.cardsTable) elements.cardsTable.classList.add('hidden');
+            if (elements.emptyCardsState) elements.emptyCardsState.classList.add('visible');
+            return;
+        }
+
+        if (elements.cardsTable) elements.cardsTable.classList.remove('hidden');
+        if (elements.emptyCardsState) elements.emptyCardsState.classList.remove('visible');
+
+        // Sort cards by name
+        const sortedCards = [...cards].sort((a, b) => a.name.localeCompare(b.name));
+
+        // Render table rows (desktop)
+        if (elements.cardsBody) {
+            elements.cardsBody.innerHTML = sortedCards.map(card => {
+                const feeDisplay = card.annualFee ? `$${card.annualFee.toFixed(2)}` : '$0.00';
+                const openDateDisplay = card.openDate ? formatDisplayDate(card.openDate) : '-';
+
+                return `
+                    <tr data-id="${card.id}">
+                        <td class="col-name">
+                            <div class="card-name-main">${escapeHtml(card.name)}</div>
+                            ${card.issuer ? `<div class="card-issuer">${escapeHtml(card.issuer)}</div>` : ''}
+                        </td>
+                        <td class="col-issuer">
+                            <span>${escapeHtml(card.issuer) || '-'}</span>
+                        </td>
+                        <td class="col-open-date">
+                            <span>${openDateDisplay}</span>
+                        </td>
+                        <td class="col-annual-fee">
+                            <span>${feeDisplay}</span>
+                        </td>
+                        <td class="col-notes">
+                            <span>${escapeHtml(card.notes) || '-'}</span>
+                        </td>
+                        <td class="col-actions">
+                            <div class="action-buttons">
+                                <button 
+                                    class="btn-action edit" 
+                                    onclick="App.openEditCardModal('${card.id}')"
+                                    title="Edit card"
+                                >✏️</button>
+                                <button 
+                                    class="btn-action delete" 
+                                    onclick="App.openDeleteCardModal('${card.id}')"
+                                    title="Delete card"
+                                >🗑️</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Render cards (mobile)
+        if (elements.cardsCards) {
+            elements.cardsCards.innerHTML = sortedCards.map(card => {
+                const feeDisplay = card.annualFee ? `$${card.annualFee.toFixed(2)}` : '$0.00';
+                const openDateDisplay = card.openDate ? formatDisplayDate(card.openDate) : '-';
+
+                return `
+                    <div class="card-card-item" data-id="${card.id}">
+                        <div class="card-header">
+                            <div class="card-title-section">
+                                <div>
+                                    <div class="card-title">${escapeHtml(card.name)}</div>
+                                    ${card.issuer ? `<div class="card-card-issuer">${escapeHtml(card.issuer)}</div>` : ''}
+                                </div>
+                            </div>
+                            <div class="card-actions">
+                                <button 
+                                    class="btn-action edit" 
+                                    onclick="App.openEditCardModal('${card.id}')"
+                                    title="Edit"
+                                >✏️</button>
+                                <button 
+                                    class="btn-action delete" 
+                                    onclick="App.openDeleteCardModal('${card.id}')"
+                                    title="Delete"
+                                >🗑️</button>
+                            </div>
+                        </div>
+                        <div class="card-details">
+                            <div class="card-detail">
+                                <div class="card-detail-label">Opened</div>
+                                <div class="card-detail-value">${openDateDisplay}</div>
+                            </div>
+                            <div class="card-detail">
+                                <div class="card-detail-label">Annual Fee</div>
+                                <div class="card-detail-value amount">${feeDisplay}</div>
+                            </div>
+                        </div>
+                        ${card.notes ? `<div class="card-description">${escapeHtml(card.notes)}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+    }
+
+    /**
+     * Update card statistics
+     */
+    function updateCardStats(cards) {
+        const cardCount = cards.length;
+        const totalFees = cards.reduce((sum, c) => sum + (c.annualFee || 0), 0);
+
+        if (elements.cardCount) elements.cardCount.textContent = cardCount;
+        if (elements.totalFees) elements.totalFees.textContent = `$${totalFees.toFixed(2)}`;
+    }
+
+    /**
+     * Format date for display
+     */
+    function formatDisplayDate(dateStr) {
+        if (!dateStr) return '-';
+        const date = new Date(dateStr + 'T00:00:00');
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    /**
      * Escape HTML to prevent XSS
      * @param {string} text - Text to escape
      * @returns {string} Escaped text
@@ -549,7 +919,7 @@ const App = (function () {
         try {
             elements.signInBtn.disabled = true;
             elements.signInBtn.textContent = 'Signing in...';
-            
+
             await Auth.signInWithGoogle();
         } catch (error) {
             console.error('Sign in error:', error);
@@ -586,7 +956,7 @@ const App = (function () {
         if (user) {
             // User signed in
             useCloudStorage = true;
-            
+
             // Update UI
             elements.signedOutUI.classList.add('hidden');
             elements.signedInUI.classList.remove('hidden');
@@ -598,23 +968,31 @@ const App = (function () {
 
             // Check if we should migrate local data
             const localRewards = Storage.getRewards();
-            if (localRewards.length > 0) {
-                const migrated = await Auth.migrateLocalToCloud(localRewards);
+            const localCards = Storage.getCards();
+            if (localRewards.length > 0 || localCards.length > 0) {
+                const migrated = await Auth.migrateLocalToCloud(localRewards, localCards);
                 if (migrated) {
-                    console.log('Local rewards migrated to cloud');
+                    console.log('Local data migrated to cloud');
                 }
             }
 
-            // Load from cloud
+            // Load rewards from cloud
             const cloudRewards = await Auth.loadRewardsFromCloud();
             if (cloudRewards) {
                 Storage.saveRewards(cloudRewards);
                 renderRewards();
             }
+
+            // Load cards from cloud
+            const cloudCards = await Auth.loadCardsFromCloud();
+            if (cloudCards) {
+                Storage.saveCards(cloudCards);
+                renderCards();
+            }
         } else {
             // User signed out
             useCloudStorage = false;
-            
+
             // Update UI
             elements.signedOutUI.classList.remove('hidden');
             elements.signedInUI.classList.add('hidden');
@@ -622,12 +1000,13 @@ const App = (function () {
             elements.userName.textContent = '';
             elements.syncStatus.textContent = 'Data saved locally in your browser';
             elements.syncStatus.classList.remove('sync-status-cloud');
-            
+
             if (Auth.isConfigured()) {
                 elements.syncHint.classList.remove('hidden');
             }
 
             renderRewards();
+            renderCards();
         }
     }
 
@@ -640,11 +1019,19 @@ const App = (function () {
     }
 
     /**
+     * Handle cards update from cloud
+     */
+    function handleCloudCardsUpdate(cards) {
+        Storage.saveCards(cards);
+        renderCards();
+    }
+
+    /**
      * Save rewards (local + cloud if signed in)
      */
     async function saveRewards(rewards) {
         Storage.saveRewards(rewards);
-        
+
         if (useCloudStorage && Auth.isSignedIn()) {
             await Auth.saveRewardsToCloud(rewards);
         }
@@ -656,14 +1043,15 @@ const App = (function () {
     function init() {
         initElements();
         initEventListeners();
-        
+
         // Initialize Auth if available
         if (typeof Auth !== 'undefined') {
             const authInitialized = Auth.init();
-            
+
             if (authInitialized) {
                 Auth.setOnAuthStateChanged(handleAuthStateChanged);
                 Auth.setOnRewardsUpdated(handleCloudRewardsUpdate);
+                Auth.setOnCardsUpdated(handleCloudCardsUpdate);
             } else {
                 // Firebase not configured, show hint
                 if (elements.syncHint) {
@@ -672,8 +1060,9 @@ const App = (function () {
                 }
             }
         }
-        
+
         renderRewards();
+        renderCards();
 
         // Set up daily check for resets (check every hour)
         setInterval(() => {
@@ -696,7 +1085,10 @@ const App = (function () {
         openEditModal,
         openDeleteModal,
         handleClaimedToggle,
+        openEditCardModal,
+        openDeleteCardModal,
         testResetLogic,
-        renderRewards
+        renderRewards,
+        renderCards
     };
 })();

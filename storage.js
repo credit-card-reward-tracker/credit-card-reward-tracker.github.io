@@ -179,6 +179,102 @@ const Storage = (function () {
         }
     }
 
+    // ==================== CARDS ====================
+
+    /**
+     * Get all cards
+     * @returns {Array} Array of card objects
+     */
+    function getCards() {
+        const userData = getUserData();
+        return userData.cards || [];
+    }
+
+    /**
+     * Save all cards
+     * @param {Array} cards - Array of card objects
+     * @returns {boolean} Success status
+     */
+    function saveCards(cards) {
+        const userData = getUserData();
+        userData.cards = cards;
+        return saveUserData(userData);
+    }
+
+    /**
+     * Add a new card
+     * @param {Object} cardData - Card data
+     * @returns {Object} The created card
+     */
+    function addCard(cardData) {
+        const cards = getCards();
+        const now = new Date().toISOString().split('T')[0];
+
+        const newCard = {
+            id: generateUUID(),
+            name: cardData.name,
+            issuer: cardData.issuer || '',
+            openDate: cardData.openDate || '',
+            annualFee: cardData.annualFee || 0,
+            notes: cardData.notes || '',
+            createdAt: now
+        };
+
+        cards.push(newCard);
+        saveCards(cards);
+
+        return newCard;
+    }
+
+    /**
+     * Update an existing card
+     * @param {string} id - Card ID
+     * @param {Object} updates - Fields to update
+     * @returns {Object|null} Updated card or null
+     */
+    function updateCard(id, updates) {
+        const cards = getCards();
+        const index = cards.findIndex(c => c.id === id);
+
+        if (index === -1) {
+            return null;
+        }
+
+        cards[index] = {
+            ...cards[index],
+            ...updates
+        };
+
+        saveCards(cards);
+        return cards[index];
+    }
+
+    /**
+     * Delete a card
+     * @param {string} id - Card ID
+     * @returns {boolean} Success status
+     */
+    function deleteCard(id) {
+        const cards = getCards();
+        const filteredCards = cards.filter(c => c.id !== id);
+
+        if (filteredCards.length === cards.length) {
+            return false;
+        }
+
+        return saveCards(filteredCards);
+    }
+
+    /**
+     * Get a single card by ID
+     * @param {string} id - Card ID
+     * @returns {Object|null} Card object or null
+     */
+    function getCardById(id) {
+        const cards = getCards();
+        return cards.find(c => c.id === id) || null;
+    }
+
     // Public API
     return {
         generateUUID,
@@ -191,6 +287,13 @@ const Storage = (function () {
         deleteReward,
         getRewardById,
         toggleClaimed,
-        clearAll
+        clearAll,
+        // Cards
+        getCards,
+        saveCards,
+        addCard,
+        updateCard,
+        deleteCard,
+        getCardById
     };
 })();

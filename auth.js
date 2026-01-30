@@ -24,6 +24,7 @@ const Auth = (function () {
     // Callbacks
     let onAuthStateChangedCallback = null;
     let onRewardsUpdatedCallback = null;
+    let onCardsUpdatedCallback = null;
 
     /**
      * Check if Firebase is configured
@@ -67,8 +68,8 @@ const Auth = (function () {
 
         if (user) {
             console.log('User signed in:', user.email);
-            // Start listening to user's rewards in Firestore
-            subscribeToRewards();
+            // Start listening to user's data in Firestore
+            subscribeToData();
         } else {
             console.log('User signed out');
             // Stop listening to Firestore
@@ -131,9 +132,9 @@ const Auth = (function () {
     }
 
     /**
-     * Subscribe to real-time rewards updates from Firestore
+     * Subscribe to real-time data updates from Firestore
      */
-    function subscribeToRewards() {
+    function subscribeToData() {
         if (!currentUser || !db) return;
 
         const userDocRef = db.collection('users').doc(currentUser.uid);
@@ -142,14 +143,22 @@ const Auth = (function () {
             if (doc.exists) {
                 const data = doc.data();
                 const rewards = data.rewards || [];
+                const cards = data.cards || [];
 
-                // Notify callback with updated rewards
+                // Notify callbacks with updated data
                 if (onRewardsUpdatedCallback) {
                     onRewardsUpdatedCallback(rewards);
                 }
+                if (onCardsUpdatedCallback) {
+                    onCardsUpdatedCallback(cards);
+                }
             } else {
                 // Create user document if it doesn't exist
-                userDocRef.set({ rewards: [], createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+                userDocRef.set({
+                    rewards: [],
+                    cards: [],
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
             }
         }, (error) => {
             console.error('Firestore snapshot error:', error);
@@ -173,15 +182,60 @@ const Auth = (function () {
             }, { merge: true });
             return true;
         } catch (error) {
+            console.error('Error saving rewards to Firestore:', error);
+            return false;
+        }
+    }
+
+    /**
+     * Save cards to Firestore
+     */
+    async function saveCardsToCloud(cards) {
+        if (!currentUser || !db) {
+            return false;
+        }
+
+        try {
+            const userDocRef = db.collection('users').doc(currentUser.uid);
+            await userDocRef.set({
+                cards: cards,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                email: currentUser.email
+            }, { merge: true });
+            return true;
+        } catch (error) {
+            console.error('Error saving cards to Firestore:', error);
+            return false;
+        }
+    }
+
+    /**
+     * Save all data to Firestore
+     */
+    async function saveAllToCloud(rewards, cards) {
+        if (!currentUser || !db) {
+            return false;
+        }
+
+        try {
+            const userDocRef = db.collection('users').doc(currentUser.uid);
+            await userDocRef.set({
+                rewards: rewards,
+                cards: cards,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                email: currentUser.email
+            }, { merge: true });
+            return true;
+        } catch (error) {
             console.error('Error saving to Firestore:', error);
             return false;
         }
     }
 
     /**
-     * Load rewards from Firestore (one-time fetch)
+     * Load all data from Firestore (one-time fetch)
      */
-    async function loadRewardsFromCloud() {
+    async function loadFromCloud() {
         if (!currentUser || !db) {
             return null;
         }
@@ -192,9 +246,12 @@ const Auth = (function () {
 
             if (doc.exists) {
                 const data = doc.data();
-                return data.rewards || [];
+                return {
+                    rewards: data.rewards || [],
+                    cards: data.cards || []
+                };
             }
-            return [];
+            return { rewards: [], cards: [] };
         } catch (error) {
             console.error('Error loading from Firestore:', error);
             return null;
@@ -202,21 +259,46 @@ const Auth = (function () {
     }
 
     /**
-     * Migrate local rewards to cloud on first sign-in
+     * Load rewards from Firestore (one-time fetch)
      */
-    async function migrateLocalToCloud(localRewards) {
-        if (!currentUser || !db || localRewards.length === 0) {
+    async function loadRewardsFromCloud() {
+        const data = await loadFromCloud();
+        return data ? data.rewards : null;
+    }
+
+    /**
+     * Load cards from Firestore (one-time fetch)
+     */
+    async function loadCardsFromCloud() {
+        const data = await loadFromCloud();
+        return data ? data.cards : null;
+    }
+
+    /**
+     * Migrate local data to cloud on first sign-in
+     */
+    async function migrateLocalToCloud(localRewards, localCards = []) {
+        if (!currentUser || !db) {
             return false;
         }
 
         try {
-            // Check if user already has rewards in cloud
-            const cloudRewards = await loadRewardsFromCloud();
+            // Check if user already has data in cloud
+            const cloudData = await loadFromCloud();
 
-            if (cloudRewards && cloudRewards.length === 0) {
-                // No cloud rewards, migrate local
-                await saveRewardsToCloud(localRewards);
-                console.log('Migrated local rewards to cloud');
+            if (cloudData) {
+                const hasCloudRewards = cloudData.rewards && cloudData.rewards.length > 0;
+                const hasCloudCards = cloudData.cards && cloudData.cards.length > 0;
+
+                // Migrate local data if cloud is empty
+                if (!hasCloudRewards && localRewards.length > 0) {
+                    await saveRewardsToCloud(localRewards);
+                    console.log('Migrated local rewards to cloud');
+                }
+                if (!hasCloudCards && localCards.length > 0) {
+                    await saveCardsToCloud(localCards);
+                    console.log('Migrated local cards to cloud');
+                }
                 return true;
             }
             return false;
@@ -240,6 +322,13 @@ const Auth = (function () {
         onRewardsUpdatedCallback = callback;
     }
 
+    /**
+     * Set callback for cards updates from cloud
+     */
+    function setOnCardsUpdated(callback) {
+        onCardsUpdatedCallback = callback;
+    }
+
     // Public API
     return {
         init,
@@ -250,8 +339,11 @@ const Auth = (function () {
         isSignedIn,
         saveRewardsToCloud,
         loadRewardsFromCloud,
+        saveCardsToCloud,
+        loadCardsFromCloud,
         migrateLocalToCloud,
         setOnAuthStateChanged,
-        setOnRewardsUpdated
+        setOnRewardsUpdated,
+        setOnCardsUpdated
     };
 })();

@@ -148,6 +148,56 @@ body {
     font-size: 1rem;
 }
 
+/* ===== Navigation Tabs ===== */
+.nav-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    background: var(--bg-secondary);
+    padding: 8px;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.nav-tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border: none;
+    background: transparent;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: var(--transition);
+}
+
+.nav-tab:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.nav-tab.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+.nav-icon {
+    font-size: 1.25rem;
+}
+
+/* ===== Page Container ===== */
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
 /* ===== Main Content ===== */
 .main-content {
     flex: 1;
@@ -311,6 +361,155 @@ body {
 .col-actions {
     width: 120px;
     text-align: center;
+}
+
+/* ===== Cards Table ===== */
+.cards-container {
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+.cards-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.cards-table th {
+    background-color: var(--bg-primary);
+    padding: 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.cards-table td {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+
+.cards-table tbody tr:hover {
+    background-color: var(--bg-hover);
+}
+
+.cards-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.col-card-name {
+    width: auto;
+}
+
+.col-issuer {
+    width: 120px;
+}
+
+.col-open-date {
+    width: 120px;
+}
+
+.col-annual-fee {
+    width: 100px;
+    text-align: right;
+}
+
+.col-fee-date {
+    width: 120px;
+}
+
+.card-name-cell {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.card-issuer {
+    color: var(--text-secondary);
+}
+
+.card-fee {
+    font-weight: 600;
+    color: var(--danger-color);
+}
+
+.card-fee.no-fee {
+    color: var(--success-color);
+}
+
+.card-date {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+/* Cards Mobile View */
+.cards-cards {
+    display: none;
+}
+
+.card-card-item {
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius-lg);
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow-sm);
+    border-left: 4px solid var(--primary-color);
+}
+
+.card-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.card-card-title {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.card-card-issuer {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.card-card-details {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+}
+
+.card-card-detail {
+    text-align: center;
+}
+
+.card-card-detail-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.card-card-detail-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.card-card-detail-value.fee {
+    color: var(--danger-color);
+}
+
+.card-card-detail-value.no-fee {
+    color: var(--success-color);
 }
 
 /* ===== Reward Row Styles ===== */
@@ -729,18 +928,40 @@ form {
     }
 
     /* Hide table, show cards on mobile */
-    .rewards-table {
+    .rewards-table,
+    .cards-table {
         display: none !important;
     }
 
-    .rewards-cards {
+    .rewards-cards,
+    .cards-cards {
         display: block;
         padding: 16px;
     }
 
-    .rewards-container {
+    .rewards-container,
+    .cards-container {
         background: transparent;
         box-shadow: none;
+    }
+
+    .nav-tabs {
+        padding: 4px;
+        gap: 4px;
+    }
+
+    .nav-tab {
+        flex: 1;
+        justify-content: center;
+        padding: 10px 16px;
+    }
+
+    .nav-label {
+        display: none;
+    }
+
+    .nav-icon {
+        font-size: 1.5rem;
     }
 
     .form-row {

@@ -32,10 +32,14 @@
                     <div class="user-signed-out" id="signedOutUI">
                         <button id="signInBtn" class="btn btn-outline btn-small">
                             <svg class="google-icon" viewBox="0 0 24 24" width="18" height="18">
-                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                                <path fill="#4285F4"
+                                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                                <path fill="#34A853"
+                                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                                <path fill="#FBBC05"
+                                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                                <path fill="#EA4335"
+                                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                             </svg>
                             Sign in
                         </button>
@@ -48,55 +52,103 @@
                     </div>
                 </div>
             </div>
-            <h1>💳 Credit Card Rewards Tracker</h1>
-            <p class="subtitle">Track and never miss your credit card benefits</p>
+            <h1>💳 Credit Card Tracker</h1>
+            <p class="subtitle">Track your cards and never miss rewards</p>
         </header>
 
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+            <button class="nav-tab active" data-page="rewards" id="tabRewards">
+                <span class="nav-icon">🎁</span>
+                <span class="nav-label">Rewards</span>
+            </button>
+            <button class="nav-tab" data-page="cards" id="tabCards">
+                <span class="nav-icon">💳</span>
+                <span class="nav-label">Cards</span>
+            </button>
+        </nav>
+
         <main class="main-content">
-            <div class="controls">
-                <button id="addRewardBtn" class="btn btn-primary">
-                    <span class="btn-icon">+</span> Add Reward
-                </button>
-                <div class="stats">
-                    <span class="stat">
-                        <span class="stat-value" id="unclaimedCount">0</span>
-                        <span class="stat-label">Unclaimed</span>
-                    </span>
-                    <span class="stat">
-                        <span class="stat-value" id="totalValue">$0</span>
-                        <span class="stat-label">Unclaimed Value</span>
-                    </span>
+            <!-- ==================== REWARDS PAGE ==================== -->
+            <div class="page active" id="pageRewards">
+                <div class="controls">
+                    <button id="addRewardBtn" class="btn btn-primary">
+                        <span class="btn-icon">+</span> Add Reward
+                    </button>
+                    <div class="stats">
+                        <span class="stat">
+                            <span class="stat-value" id="unclaimedCount">0</span>
+                            <span class="stat-label">Unclaimed</span>
+                        </span>
+                        <span class="stat">
+                            <span class="stat-value" id="totalValue">$0</span>
+                            <span class="stat-label">Unclaimed Value</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="rewards-container">
+                    <table class="rewards-table" id="rewardsTable">
+                        <thead>
+                            <tr>
+                                <th class="col-claimed">Claimed</th>
+                                <th class="col-name">Reward</th>
+                                <th class="col-card">Card</th>
+                                <th class="col-amount">Amount</th>
+                                <th class="col-recurrence">Recurrence</th>
+                                <th class="col-reset">Next Reset</th>
+                                <th class="col-actions">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rewardsBody"></tbody>
+                    </table>
+                    <div class="rewards-cards" id="rewardsCards"></div>
+                    <div class="empty-state" id="emptyState">
+                        <div class="empty-icon">🎁</div>
+                        <h3>No rewards yet</h3>
+                        <p>Add your first credit card reward to start tracking!</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="rewards-container">
-                <!-- Desktop Table View -->
-                <table class="rewards-table" id="rewardsTable">
-                    <thead>
-                        <tr>
-                            <th class="col-claimed">Claimed</th>
-                            <th class="col-name">Reward</th>
-                            <th class="col-card">Card</th>
-                            <th class="col-amount">Amount</th>
-                            <th class="col-recurrence">Recurrence</th>
-                            <th class="col-reset">Next Reset</th>
-                            <th class="col-actions">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="rewardsBody">
-                        <!-- Rewards will be rendered here -->
-                    </tbody>
-                </table>
-
-                <!-- Mobile Card View -->
-                <div class="rewards-cards" id="rewardsCards">
-                    <!-- Mobile cards will be rendered here -->
+            <!-- ==================== CARDS PAGE ==================== -->
+            <div class="page" id="pageCards">
+                <div class="controls">
+                    <button id="addCardBtn" class="btn btn-primary">
+                        <span class="btn-icon">+</span> Add Card
+                    </button>
+                    <div class="stats">
+                        <span class="stat">
+                            <span class="stat-value" id="totalCards">0</span>
+                            <span class="stat-label">Cards</span>
+                        </span>
+                        <span class="stat">
+                            <span class="stat-value" id="totalAnnualFees">$0</span>
+                            <span class="stat-label">Annual Fees</span>
+                        </span>
+                    </div>
                 </div>
 
-                <div class="empty-state" id="emptyState">
-                    <div class="empty-icon">🎁</div>
-                    <h3>No rewards yet</h3>
-                    <p>Add your first credit card reward to start tracking!</p>
+                <div class="cards-container">
+                    <table class="cards-table" id="cardsTable">
+                        <thead>
+                            <tr>
+                                <th class="col-card-name">Card Name</th>
+                                <th class="col-issuer">Issuer</th>
+                                <th class="col-open-date">Opened</th>
+                                <th class="col-annual-fee">Annual Fee</th>
+                                <th class="col-fee-date">Fee Date</th>
+                                <th class="col-actions">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cardsBody"></tbody>
+                    </table>
+                    <div class="cards-cards" id="cardsCards"></div>
+                    <div class="empty-state" id="emptyCardsState">
+                        <div class="empty-icon">💳</div>
+                        <h3>No cards yet</h3>
+                        <p>Add your first credit card to track annual fees!</p>
+                    </div>
                 </div>
             </div>
         </main>
@@ -107,7 +159,7 @@
         </footer>
     </div>
 
-    <!-- Add/Edit Reward Modal -->
+    <!-- Reward Modal -->
     <div class="modal-overlay" id="rewardModal">
         <div class="modal">
             <div class="modal-header">
@@ -116,17 +168,16 @@
             </div>
             <form id="rewardForm">
                 <input type="hidden" id="rewardId">
-
                 <div class="form-group">
                     <label for="rewardName">Reward Name <span class="required">*</span></label>
                     <input type="text" id="rewardName" required placeholder="e.g., Uber Credits">
                 </div>
-
                 <div class="form-group">
-                    <label for="cardName">Card Name</label>
-                    <input type="text" id="cardName" placeholder="e.g., Amex Gold">
+                    <label for="rewardCardSelect">Card</label>
+                    <select id="rewardCardSelect">
+                        <option value="">-- Select a card --</option>
+                    </select>
                 </div>
-
                 <div class="form-row">
                     <div class="form-group">
                         <label for="amount">Amount ($)</label>
@@ -136,13 +187,12 @@
                         <label for="recurrenceType">Recurrence <span class="required">*</span></label>
                         <select id="recurrenceType" required>
                             <option value="monthly">Monthly (resets 1st of month)</option>
-                            <option value="half-yearly">Half-Yearly (resets Jan 1 / Jul 1)</option>
+                            <option value="half-yearly">Half-Yearly (Jan 1 / Jul 1)</option>
                             <option value="yearly">Yearly (resets Jan 1)</option>
                             <option value="custom">Custom</option>
                         </select>
                     </div>
                 </div>
-
                 <div class="form-row custom-recurrence" id="customRecurrence" style="display: none;">
                     <div class="form-group">
                         <label for="customInterval">Every</label>
@@ -158,12 +208,10 @@
                         </select>
                     </div>
                 </div>
-
                 <div class="form-group">
                     <label for="description">Description</label>
-                    <textarea id="description" rows="2" placeholder="Optional notes about this reward"></textarea>
+                    <textarea id="description" rows="2" placeholder="Optional notes"></textarea>
                 </div>
-
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save Reward</button>
@@ -172,15 +220,54 @@
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
+    <!-- Card Modal -->
+    <div class="modal-overlay" id="cardModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="cardModalTitle">Add Card</h2>
+                <button class="modal-close" id="closeCardModal">&times;</button>
+            </div>
+            <form id="cardForm">
+                <input type="hidden" id="cardId">
+                <div class="form-group">
+                    <label for="cardNameInput">Card Name <span class="required">*</span></label>
+                    <input type="text" id="cardNameInput" required placeholder="e.g., Chase Sapphire Preferred">
+                </div>
+                <div class="form-group">
+                    <label for="cardIssuer">Issuer</label>
+                    <input type="text" id="cardIssuer" placeholder="e.g., Chase, Amex, Citi">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cardOpenDate">Open Date</label>
+                        <input type="date" id="cardOpenDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="cardAnnualFee">Annual Fee ($)</label>
+                        <input type="number" id="cardAnnualFee" min="0" step="1" placeholder="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="cardNotes">Notes</label>
+                    <textarea id="cardNotes" rows="2" placeholder="Optional notes"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelCardBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Card</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
     <div class="modal-overlay" id="deleteModal">
         <div class="modal modal-small">
             <div class="modal-header">
-                <h2>Delete Reward</h2>
+                <h2 id="deleteModalTitle">Delete Item</h2>
                 <button class="modal-close" id="closeDeleteModal">&times;</button>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to delete "<span id="deleteRewardName"></span>"?</p>
+                <p>Are you sure you want to delete "<span id="deleteItemName"></span>"?</p>
                 <p class="text-muted">This action cannot be undone.</p>
             </div>
             <div class="modal-actions">
@@ -190,27 +277,20 @@
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
+    <!-- Scripts -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    
     <script src="storage.js"></script>
     <script src="recurrence.js"></script>
     <script src="auth.js"></script>
     <script src="app.js"></script>
-
-    <!-- Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
-                    .then(registration => {
-                        console.log('SW registered:', registration.scope);
-                    })
-                    .catch(error => {
-                        console.log('SW registration failed:', error);
-                    });
+                    .then(r => console.log('SW registered:', r.scope))
+                    .catch(e => console.log('SW failed:', e));
             });
         }
     </script>
