@@ -91,12 +91,18 @@
                     <table class="rewards-table" id="rewardsTable">
                         <thead>
                             <tr>
-                                <th class="col-claimed">Claimed</th>
-                                <th class="col-name">Reward</th>
-                                <th class="col-card">Card</th>
-                                <th class="col-amount">Amount</th>
-                                <th class="col-recurrence">Recurrence</th>
-                                <th class="col-reset">Next Reset</th>
+                                <th class="col-claimed sortable" data-sort="claimed">Claimed <span
+                                        class="sort-icon"></span></th>
+                                <th class="col-name sortable" data-sort="title">Reward <span class="sort-icon"></span>
+                                </th>
+                                <th class="col-card sortable" data-sort="cardName">Card <span class="sort-icon"></span>
+                                </th>
+                                <th class="col-amount sortable" data-sort="amount">Amount <span
+                                        class="sort-icon"></span></th>
+                                <th class="col-recurrence sortable" data-sort="recurrence">Recurrence <span
+                                        class="sort-icon"></span></th>
+                                <th class="col-reset sortable sorted-asc" data-sort="nextReset">Next Reset <span
+                                        class="sort-icon">▲</span></th>
                                 <th class="col-actions">Actions</th>
                             </tr>
                         </thead>
@@ -133,11 +139,16 @@
                     <table class="cards-table" id="cardsTable">
                         <thead>
                             <tr>
-                                <th class="col-card-name">Card Name</th>
-                                <th class="col-issuer">Issuer</th>
-                                <th class="col-open-date">Opened</th>
-                                <th class="col-annual-fee">Annual Fee</th>
-                                <th class="col-fee-date">Fee Date</th>
+                                <th class="col-card-name sortable sorted-asc" data-sort="name">Card Name <span
+                                        class="sort-icon">▲</span></th>
+                                <th class="col-issuer sortable" data-sort="issuer">Issuer <span
+                                        class="sort-icon"></span></th>
+                                <th class="col-open-date sortable" data-sort="openDate">Opened <span
+                                        class="sort-icon"></span></th>
+                                <th class="col-annual-fee sortable" data-sort="annualFee">Annual Fee <span
+                                        class="sort-icon"></span></th>
+                                <th class="col-fee-date sortable" data-sort="feeDate">Fee Date <span
+                                        class="sort-icon"></span></th>
                                 <th class="col-actions">Actions</th>
                             </tr>
                         </thead>

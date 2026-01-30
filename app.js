@@ -12,6 +12,12 @@ const App = (function () {
     let deleteCardId = null;
     let useCloudStorage = false;
 
+    // Sort state
+    let rewardsSortField = 'nextReset';
+    let rewardsSortDir = 'asc';
+    let cardsSortField = 'name';
+    let cardsSortDir = 'asc';
+
     /**
      * Initialize DOM element references
      */
@@ -173,6 +179,150 @@ const App = (function () {
                 closeDeleteModal();
                 closeCardModal();
             }
+        });
+
+        // Sortable table headers - Rewards
+        document.querySelectorAll('#rewardsTable th.sortable').forEach(th => {
+            th.addEventListener('click', () => handleRewardsSort(th.dataset.sort));
+        });
+
+        // Sortable table headers - Cards
+        document.querySelectorAll('#cardsTable th.sortable').forEach(th => {
+            th.addEventListener('click', () => handleCardsSort(th.dataset.sort));
+        });
+    }
+
+    /**
+     * Handle rewards table sort
+     */
+    function handleRewardsSort(field) {
+        if (rewardsSortField === field) {
+            rewardsSortDir = rewardsSortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+            rewardsSortField = field;
+            rewardsSortDir = 'asc';
+        }
+        updateSortIndicators('rewardsTable', rewardsSortField, rewardsSortDir);
+        renderRewards();
+    }
+
+    /**
+     * Handle cards table sort
+     */
+    function handleCardsSort(field) {
+        if (cardsSortField === field) {
+            cardsSortDir = cardsSortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+            cardsSortField = field;
+            cardsSortDir = 'asc';
+        }
+        updateSortIndicators('cardsTable', cardsSortField, cardsSortDir);
+        renderCards();
+    }
+
+    /**
+     * Update sort indicators on table headers
+     */
+    function updateSortIndicators(tableId, field, dir) {
+        const table = document.getElementById(tableId);
+        if (!table) return;
+
+        table.querySelectorAll('th.sortable').forEach(th => {
+            th.classList.remove('sorted-asc', 'sorted-desc');
+            const icon = th.querySelector('.sort-icon');
+            if (icon) icon.textContent = '';
+
+            if (th.dataset.sort === field) {
+                th.classList.add(dir === 'asc' ? 'sorted-asc' : 'sorted-desc');
+                if (icon) icon.textContent = dir === 'asc' ? '▲' : '▼';
+            }
+        });
+    }
+
+    /**
+     * Sort rewards array by field and direction
+     */
+    function sortRewards(rewards, field, dir) {
+        const multiplier = dir === 'asc' ? 1 : -1;
+
+        return [...rewards].sort((a, b) => {
+            let valA, valB;
+
+            switch (field) {
+                case 'claimed':
+                    valA = a.claimed ? 1 : 0;
+                    valB = b.claimed ? 1 : 0;
+                    break;
+                case 'title':
+                    valA = (a.title || '').toLowerCase();
+                    valB = (b.title || '').toLowerCase();
+                    return multiplier * valA.localeCompare(valB);
+                case 'cardName':
+                    valA = (a.cardName || '').toLowerCase();
+                    valB = (b.cardName || '').toLowerCase();
+                    return multiplier * valA.localeCompare(valB);
+                case 'amount':
+                    valA = a.amount || 0;
+                    valB = b.amount || 0;
+                    break;
+                case 'recurrence':
+                    const order = { monthly: 1, 'half-yearly': 2, yearly: 3, custom: 4 };
+                    valA = order[a.recurrence?.type] || 5;
+                    valB = order[b.recurrence?.type] || 5;
+                    break;
+                case 'nextReset':
+                default:
+                    valA = Recurrence.calculateNextResetDate(a);
+                    valB = Recurrence.calculateNextResetDate(b);
+                    break;
+            }
+
+            if (valA < valB) return -1 * multiplier;
+            if (valA > valB) return 1 * multiplier;
+            return 0;
+        });
+    }
+
+    /**
+     * Sort cards array by field and direction
+     */
+    function sortCards(cards, field, dir) {
+        const multiplier = dir === 'asc' ? 1 : -1;
+
+        return [...cards].sort((a, b) => {
+            let valA, valB;
+
+            switch (field) {
+                case 'name':
+                    valA = (a.name || '').toLowerCase();
+                    valB = (b.name || '').toLowerCase();
+                    return multiplier * valA.localeCompare(valB);
+                case 'issuer':
+                    valA = (a.issuer || '').toLowerCase();
+                    valB = (b.issuer || '').toLowerCase();
+                    return multiplier * valA.localeCompare(valB);
+                case 'openDate':
+                    valA = a.openDate || '';
+                    valB = b.openDate || '';
+                    return multiplier * valA.localeCompare(valB);
+                case 'annualFee':
+                    valA = a.annualFee || 0;
+                    valB = b.annualFee || 0;
+                    break;
+                case 'feeDate':
+                    // Fee date is typically the same month as open date
+                    valA = a.openDate ? a.openDate.substring(5, 7) : '13';
+                    valB = b.openDate ? b.openDate.substring(5, 7) : '13';
+                    break;
+                default:
+                    valA = (a.name || '').toLowerCase();
+                    valB = (b.name || '').toLowerCase();
+                    return multiplier * valA.localeCompare(valB);
+            }
+
+            if (valA < valB) return -1 * multiplier;
+            if (valA > valB) return 1 * multiplier;
+            return 0;
         });
     }
 
@@ -511,17 +661,8 @@ const App = (function () {
         elements.rewardsTable.classList.remove('hidden');
         elements.emptyState.classList.remove('visible');
 
-        // Sort rewards: unclaimed first, then by next reset date
-        const sortedRewards = [...processedRewards].sort((a, b) => {
-            // Claimed rewards go to the bottom
-            if (a.claimed !== b.claimed) {
-                return a.claimed ? 1 : -1;
-            }
-            // Then sort by next reset date (soonest first)
-            const dateA = Recurrence.calculateNextResetDate(a);
-            const dateB = Recurrence.calculateNextResetDate(b);
-            return dateA - dateB;
-        });
+        // Sort rewards based on current sort state
+        const sortedRewards = sortRewards(processedRewards, rewardsSortField, rewardsSortDir);
 
         // Render table rows (desktop)
         elements.rewardsBody.innerHTML = sortedRewards.map(reward => {
@@ -690,8 +831,8 @@ const App = (function () {
         if (elements.cardsTable) elements.cardsTable.classList.remove('hidden');
         if (elements.emptyCardsState) elements.emptyCardsState.classList.remove('visible');
 
-        // Sort cards by name
-        const sortedCards = [...cards].sort((a, b) => a.name.localeCompare(b.name));
+        // Sort cards based on current sort state
+        const sortedCards = sortCards(cards, cardsSortField, cardsSortDir);
 
         // Render table rows (desktop)
         if (elements.cardsBody) {

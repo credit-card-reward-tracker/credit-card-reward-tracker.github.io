@@ -317,6 +317,29 @@ body {
     border-bottom: 2px solid var(--border-color);
 }
 
+.rewards-table th.sortable,
+.cards-table th.sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.15s ease;
+}
+
+.rewards-table th.sortable:hover,
+.cards-table th.sortable:hover {
+    background-color: var(--bg-hover);
+}
+
+.sort-icon {
+    margin-left: 4px;
+    font-size: 0.75rem;
+    opacity: 0.5;
+}
+
+.sortable.sorted-asc .sort-icon,
+.sortable.sorted-desc .sort-icon {
+    opacity: 1;
+}
+
 .rewards-table td {
     padding: 16px;
     border-bottom: 1px solid var(--border-color);
