@@ -1,6 +1,11 @@
 /**
  * Recurrence Module
  * Handles recurrence calculations and automatic reset logic
+ * 
+ * Reset dates are calendar-based:
+ * - Monthly: 1st of each month
+ * - Half-yearly: Jan 1 and Jul 1
+ * - Yearly: Jan 1
  */
 
 const Recurrence = (function () {
@@ -35,26 +40,49 @@ const Recurrence = (function () {
     }
 
     /**
-     * Add a duration to a date based on recurrence settings
-     * @param {Date} date - Base date
-     * @param {Object} recurrence - Recurrence object
-     * @returns {Date} New date after adding duration
+     * Calculate the next reset date based on calendar rules
+     * @param {Object} reward - Reward object
+     * @returns {Date} Next reset date
      */
-    function addDuration(date, recurrence) {
-        const result = new Date(date);
-        const { type, interval = 1, unit = 'month' } = recurrence;
-
+    function calculateNextResetDate(reward) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const { type, interval = 1, unit = 'month' } = reward.recurrence;
+        
         switch (type) {
-            case 'monthly':
-                result.setMonth(result.getMonth() + 1);
-                break;
-            case 'quarterly':
-                result.setMonth(result.getMonth() + 3);
-                break;
-            case 'yearly':
-                result.setFullYear(result.getFullYear() + 1);
-                break;
-            case 'custom':
+            case 'monthly': {
+                // Monthly resets on 1st of each month
+                // If today is before the 1st (impossible) or on/after 1st, next reset is 1st of next month
+                const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+                return nextMonth;
+            }
+            
+            case 'half-yearly': {
+                // Half-yearly resets on Jan 1 and Jul 1
+                const year = today.getFullYear();
+                const month = today.getMonth();
+                
+                if (month < 6) {
+                    // Before July, next reset is Jul 1
+                    return new Date(year, 6, 1); // July 1
+                } else {
+                    // July or later, next reset is Jan 1 next year
+                    return new Date(year + 1, 0, 1); // Jan 1 next year
+                }
+            }
+            
+            case 'yearly': {
+                // Yearly resets on Jan 1
+                const year = today.getFullYear();
+                return new Date(year + 1, 0, 1); // Jan 1 next year
+            }
+            
+            case 'custom': {
+                // Custom recurrence - add interval from last reset date
+                const lastReset = parseDate(reward.lastResetDate);
+                const result = new Date(lastReset);
+                
                 switch (unit) {
                     case 'day':
                         result.setDate(result.getDate() + interval);
@@ -69,20 +97,54 @@ const Recurrence = (function () {
                         result.setFullYear(result.getFullYear() + interval);
                         break;
                 }
-                break;
+                return result;
+            }
+            
+            default:
+                // Fallback: next month
+                return new Date(today.getFullYear(), today.getMonth() + 1, 1);
         }
-
-        return result;
     }
 
     /**
-     * Calculate the next reset date for a reward
-     * @param {Object} reward - Reward object
-     * @returns {Date} Next reset date
+     * Get the last reset date (start of current period) based on calendar rules
+     * @param {Object} recurrence - Recurrence object
+     * @returns {Date} Last reset date
      */
-    function calculateNextResetDate(reward) {
-        const lastReset = parseDate(reward.lastResetDate);
-        return addDuration(lastReset, reward.recurrence);
+    function getLastResetDate(recurrence) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const { type } = recurrence;
+        
+        switch (type) {
+            case 'monthly': {
+                // Last reset was 1st of current month
+                return new Date(today.getFullYear(), today.getMonth(), 1);
+            }
+            
+            case 'half-yearly': {
+                // Last reset was Jan 1 or Jul 1
+                const year = today.getFullYear();
+                const month = today.getMonth();
+                
+                if (month < 6) {
+                    // Before July, last reset was Jan 1
+                    return new Date(year, 0, 1);
+                } else {
+                    // July or later, last reset was Jul 1
+                    return new Date(year, 6, 1);
+                }
+            }
+            
+            case 'yearly': {
+                // Last reset was Jan 1 of current year
+                return new Date(today.getFullYear(), 0, 1);
+            }
+            
+            default:
+                return today;
+        }
     }
 
     /**
@@ -107,22 +169,23 @@ const Recurrence = (function () {
     }
 
     /**
-     * Check if a reward needs to be reset
+     * Check if a reward needs to be reset (new period started since last reset)
      * @param {Object} reward - Reward object
      * @returns {boolean} True if reset is needed
      */
     function needsReset(reward) {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const nextReset = calculateNextResetDate(reward);
-        nextReset.setHours(0, 0, 0, 0);
-
-        return today >= nextReset;
+        const lastResetStored = parseDate(reward.lastResetDate);
+        lastResetStored.setHours(0, 0, 0, 0);
+        
+        const currentPeriodStart = getLastResetDate(reward.recurrence);
+        currentPeriodStart.setHours(0, 0, 0, 0);
+        
+        // If the stored last reset is before the current period start, we need to reset
+        return lastResetStored < currentPeriodStart;
     }
 
     /**
-     * Check if a reward is overdue (unclaimed and past reset date)
+     * Check if a reward is overdue (unclaimed and close to reset)
      * @param {Object} reward - Reward object
      * @returns {boolean} True if overdue
      */
@@ -131,36 +194,29 @@ const Recurrence = (function () {
             return false;
         }
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const nextReset = calculateNextResetDate(reward);
-        nextReset.setHours(0, 0, 0, 0);
-
-        // Consider overdue if we're within 3 days of reset and still unclaimed
-        const warningDate = new Date(nextReset);
-        warningDate.setDate(warningDate.getDate() - 3);
-
-        return today >= warningDate;
+        const daysLeft = daysUntilReset(reward);
+        
+        // Consider overdue if within 3 days of reset
+        return daysLeft <= 3;
     }
 
     /**
      * Process all rewards and reset those that need it
      * @param {Array} rewards - Array of reward objects
-     * @returns {Array} Updated rewards array
+     * @returns {Object} Updated rewards array and update flag
      */
     function processResets(rewards) {
-        const today = getToday();
         let updated = false;
 
         const processedRewards = rewards.map(reward => {
             if (needsReset(reward)) {
                 updated = true;
-                // Reset the reward
+                // Reset the reward with current period start date
+                const currentPeriodStart = getLastResetDate(reward.recurrence);
                 return {
                     ...reward,
                     claimed: false,
-                    lastResetDate: today
+                    lastResetDate: formatDate(currentPeriodStart)
                 };
             }
             return reward;
@@ -183,8 +239,8 @@ const Recurrence = (function () {
         switch (type) {
             case 'monthly':
                 return 'Monthly';
-            case 'quarterly':
-                return 'Quarterly';
+            case 'half-yearly':
+                return 'Half-Yearly';
             case 'yearly':
                 return 'Yearly';
             case 'custom':
@@ -198,7 +254,7 @@ const Recurrence = (function () {
     /**
      * Calculate days until next reset
      * @param {Object} reward - Reward object
-     * @returns {number} Days until reset (negative if overdue)
+     * @returns {number} Days until reset
      */
     function daysUntilReset(reward) {
         const today = new Date();
@@ -216,7 +272,7 @@ const Recurrence = (function () {
         parseDate,
         formatDate,
         getToday,
-        addDuration,
+        getLastResetDate,
         calculateNextResetDate,
         getNextResetDateString,
         formatNextResetDisplay,

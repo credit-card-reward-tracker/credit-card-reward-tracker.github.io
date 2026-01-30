@@ -9,16 +9,16 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="CC Rewards">
-    
+
     <title>Credit Card Rewards Tracker</title>
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="icons/icon-192.svg">
     <link rel="apple-touch-icon" href="icons/icon-192.svg">
-    
+
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
-    
+
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -112,9 +112,9 @@
                     <div class="form-group">
                         <label for="recurrenceType">Recurrence <span class="required">*</span></label>
                         <select id="recurrenceType" required>
-                            <option value="monthly">Monthly</option>
-                            <option value="quarterly">Quarterly</option>
-                            <option value="yearly">Yearly</option>
+                            <option value="monthly">Monthly (resets 1st of month)</option>
+                            <option value="half-yearly">Half-Yearly (resets Jan 1 / Jul 1)</option>
+                            <option value="yearly">Yearly (resets Jan 1)</option>
                             <option value="custom">Custom</option>
                         </select>
                     </div>
@@ -170,7 +170,7 @@
     <script src="storage.js"></script>
     <script src="recurrence.js"></script>
     <script src="app.js"></script>
-    
+
     <!-- Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {

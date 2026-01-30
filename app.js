@@ -202,16 +202,24 @@ const App = (function () {
             recurrence.unit = elements.customUnit.value;
         }
 
+        // Calculate the proper lastResetDate based on calendar rules
+        const lastResetDate = Recurrence.formatDate(Recurrence.getLastResetDate(recurrence));
+
         const rewardData = {
             title,
             cardName,
             amount,
             description,
-            recurrence
+            recurrence,
+            lastResetDate
         };
 
         if (id) {
-            // Update existing reward
+            // Update existing reward (don't change lastResetDate unless recurrence type changed)
+            const existingReward = Storage.getRewardById(id);
+            if (existingReward && existingReward.recurrence.type === recurrenceType) {
+                delete rewardData.lastResetDate; // Keep existing lastResetDate
+            }
             Storage.updateReward(id, rewardData);
         } else {
             // Add new reward
