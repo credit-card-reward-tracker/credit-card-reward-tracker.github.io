@@ -241,6 +241,15 @@ body {
     letter-spacing: 0.5px;
 }
 
+.stat-highlight {
+    background: linear-gradient(135deg, var(--success-bg), #a7f3d0);
+    border: 1px solid var(--success-color);
+}
+
+.stat-highlight .stat-value {
+    color: var(--success-color);
+}
+
 /* ===== Buttons ===== */
 .btn {
     display: inline-flex;
@@ -1458,6 +1467,28 @@ form {
     margin-bottom: 4px;
 }
 
+.partner-logo-img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    margin-bottom: 4px;
+    border-radius: 4px;
+}
+
+.partner-logo-fallback {
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    color: white;
+    font-weight: 700;
+    font-size: 0.85rem;
+    border-radius: 4px;
+    margin-bottom: 4px;
+}
+
 .partner-name {
     font-size: 0.7rem;
     color: var(--text-secondary);
@@ -1487,6 +1518,19 @@ form {
     background-color: var(--bg-primary);
     border-radius: 4px;
     position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    min-height: 24px;
+}
+
+.partner-chip .partner-logo {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    border-radius: 2px;
+    margin: 0;
 }
 
 /* Custom tooltip for partner chips */

@@ -35,6 +35,7 @@ const App = (function () {
             emptyState: document.getElementById('emptyState'),
             unclaimedCount: document.getElementById('unclaimedCount'),
             totalValue: document.getElementById('totalValue'),
+            totalAnnualRewards: document.getElementById('totalAnnualRewards'),
 
             // Main UI - Cards
             addCardBtn: document.getElementById('addCardBtn'),
@@ -408,27 +409,27 @@ const App = (function () {
 
     const TRANSFER_PARTNERS = {
         // Airlines
-        'united': { name: 'United Airlines', logo: '✈️', type: 'airline' },
-        'delta': { name: 'Delta Air Lines', logo: '🔺', type: 'airline' },
-        'american': { name: 'American Airlines', logo: '🦅', type: 'airline' },
-        'southwest': { name: 'Southwest Airlines', logo: '❤️', type: 'airline' },
-        'jetblue': { name: 'JetBlue', logo: '🔵', type: 'airline' },
-        'alaska': { name: 'Alaska Airlines', logo: '🏔️', type: 'airline' },
-        'british': { name: 'British Airways', logo: '🇬🇧', type: 'airline' },
-        'airfrance': { name: 'Air France/KLM', logo: '🇫🇷', type: 'airline' },
-        'singapore': { name: 'Singapore Airlines', logo: '🇸🇬', type: 'airline' },
-        'emirates': { name: 'Emirates', logo: '🇦🇪', type: 'airline' },
-        'ana': { name: 'ANA', logo: '🇯🇵', type: 'airline' },
-        'cathay': { name: 'Cathay Pacific', logo: '🐉', type: 'airline' },
-        'virgin': { name: 'Virgin Atlantic', logo: '💜', type: 'airline' },
-        'qantas': { name: 'Qantas', logo: '🦘', type: 'airline' },
+        'united': { name: 'United Airlines', logo: 'https://www.united.com/favicon.ico', type: 'airline' },
+        'delta': { name: 'Delta Air Lines', logo: 'https://www.delta.com/favicon.ico', type: 'airline' },
+        'american': { name: 'American Airlines', logo: 'https://www.aa.com/favicon.ico', type: 'airline' },
+        'southwest': { name: 'Southwest Airlines', logo: 'https://www.southwest.com/favicon.ico', type: 'airline' },
+        'jetblue': { name: 'JetBlue', logo: 'https://www.jetblue.com/favicon.ico', type: 'airline' },
+        'alaska': { name: 'Alaska Airlines', logo: 'https://www.alaskaair.com/favicon.ico', type: 'airline' },
+        'british': { name: 'British Airways', logo: 'https://www.britishairways.com/favicon.ico', type: 'airline' },
+        'airfrance': { name: 'Air France/KLM', logo: 'https://www.airfrance.com/favicon.ico', type: 'airline' },
+        'singapore': { name: 'Singapore Airlines', logo: 'https://www.singaporeair.com/favicon.ico', type: 'airline' },
+        'emirates': { name: 'Emirates', logo: 'https://www.emirates.com/favicon.ico', type: 'airline' },
+        'ana': { name: 'ANA', logo: 'https://www.ana.co.jp/favicon.ico', type: 'airline' },
+        'cathay': { name: 'Cathay Pacific', logo: 'https://www.cathaypacific.com/favicon.ico', type: 'airline' },
+        'virgin': { name: 'Virgin Atlantic', logo: 'https://www.virginatlantic.com/favicon.ico', type: 'airline' },
+        'qantas': { name: 'Qantas', logo: 'https://www.qantas.com/favicon.ico', type: 'airline' },
         // Hotels
-        'marriott': { name: 'Marriott Bonvoy', logo: '🏨', type: 'hotel' },
-        'hilton': { name: 'Hilton Honors', logo: '🛏️', type: 'hotel' },
-        'hyatt': { name: 'World of Hyatt', logo: '🌍', type: 'hotel' },
-        'ihg': { name: 'IHG Rewards', logo: '🏢', type: 'hotel' },
-        'choice': { name: 'Choice Privileges', logo: '🔑', type: 'hotel' },
-        'wyndham': { name: 'Wyndham Rewards', logo: '🌟', type: 'hotel' }
+        'marriott': { name: 'Marriott Bonvoy', logo: 'https://www.marriott.com/favicon.ico', type: 'hotel' },
+        'hilton': { name: 'Hilton Honors', logo: 'https://www.hilton.com/favicon.ico', type: 'hotel' },
+        'hyatt': { name: 'World of Hyatt', logo: 'https://www.hyatt.com/favicon.ico', type: 'hotel' },
+        'ihg': { name: 'IHG Rewards', logo: 'https://www.ihg.com/favicon.ico', type: 'hotel' },
+        'choice': { name: 'Choice Privileges', logo: 'https://www.choicehotels.com/favicon.ico', type: 'hotel' },
+        'wyndham': { name: 'Wyndham Rewards', logo: 'https://www.wyndhamhotels.com/favicon.ico', type: 'hotel' }
     };
 
     /**
@@ -489,7 +490,7 @@ const App = (function () {
         return `<div class="card-partners">
             ${transferPartners.map(p => {
             const info = getPartnerInfo(p);
-            return `<span class="partner-chip" title="${escapeHtml(info.name)}">${info.logo}</span>`;
+            return `<span class="partner-chip" title="${escapeHtml(info.name)}"><img src="${info.logo}" alt="${escapeHtml(info.name)}" class="partner-logo" onerror="this.style.display='none';this.parentElement.innerHTML='${info.name.charAt(0)}'"></span>`;
         }).join('')}
         </div>`;
     }
@@ -1058,8 +1059,46 @@ const App = (function () {
         const unclaimedCount = unclaimed.length;
         const totalValue = unclaimed.reduce((sum, r) => sum + (r.amount || 0), 0);
 
+        // Calculate total annual value based on recurrence
+        const totalAnnualValue = rewards.reduce((sum, reward) => {
+            const amount = reward.amount || 0;
+            const recurrence = reward.recurrence;
+
+            if (!recurrence) return sum + amount;
+
+            let multiplier = 1;
+            if (recurrence.type === 'monthly') {
+                multiplier = 12;
+            } else if (recurrence.type === 'quarterly') {
+                multiplier = 4;
+            } else if (recurrence.type === 'half-yearly') {
+                multiplier = 2;
+            } else if (recurrence.type === 'yearly') {
+                multiplier = 1;
+            } else if (recurrence.type === 'custom') {
+                // Calculate based on custom interval and unit
+                const interval = recurrence.interval || 1;
+                const unit = recurrence.unit || 'month';
+
+                if (unit === 'day') {
+                    multiplier = 365 / interval;
+                } else if (unit === 'week') {
+                    multiplier = 52 / interval;
+                } else if (unit === 'month') {
+                    multiplier = 12 / interval;
+                } else if (unit === 'year') {
+                    multiplier = 1 / interval;
+                }
+            }
+
+            return sum + (amount * multiplier);
+        }, 0);
+
         elements.unclaimedCount.textContent = unclaimedCount;
         elements.totalValue.textContent = `$${totalValue.toFixed(2)}`;
+        if (elements.totalAnnualRewards) {
+            elements.totalAnnualRewards.textContent = `$${totalAnnualValue.toFixed(2)}`;
+        }
     }
 
     /**
@@ -1347,7 +1386,7 @@ const App = (function () {
                     ? `<div class="bestcard-partners">
                         ${card.transferPartners.map(p => {
                         const info = getPartnerInfo(p);
-                        return `<span class="partner-chip" title="${escapeHtml(info.name)}">${info.logo}</span>`;
+                        return `<span class="partner-chip" title="${escapeHtml(info.name)}"><img src="${info.logo}" alt="${escapeHtml(info.name)}" class="partner-logo" onerror="this.style.display='none';this.parentElement.innerHTML='${info.name.charAt(0)}'"></span>`;
                     }).join('')}
                        </div>`
                     : '';

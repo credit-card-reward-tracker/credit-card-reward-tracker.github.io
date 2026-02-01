@@ -88,6 +88,10 @@
                             <span class="stat-value" id="totalValue">$0</span>
                             <span class="stat-label">Unclaimed Value</span>
                         </span>
+                        <span class="stat stat-highlight">
+                            <span class="stat-value" id="totalAnnualRewards">$0</span>
+                            <span class="stat-label">Annual Value</span>
+                        </span>
                     </div>
                 </div>
 
@@ -375,72 +379,106 @@
                         <div class="partners-grid" id="airlinePartnersGrid">
                             <label class="partner-checkbox" title="United Airlines">
                                 <input type="checkbox" id="partner_united">
-                                <span class="partner-logo">✈️</span>
+                                <img src="https://www.united.com/favicon.ico" alt="United" class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+                                <span class="partner-logo-fallback" style="display:none">U</span>
                                 <span class="partner-name">United</span>
                             </label>
                             <label class="partner-checkbox" title="Delta Air Lines">
                                 <input type="checkbox" id="partner_delta">
-                                <span class="partner-logo">🔺</span>
+                                <img src="https://www.delta.com/favicon.ico" alt="Delta" class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+                                <span class="partner-logo-fallback" style="display:none">D</span>
                                 <span class="partner-name">Delta</span>
                             </label>
                             <label class="partner-checkbox" title="American Airlines">
                                 <input type="checkbox" id="partner_american">
-                                <span class="partner-logo">🦅</span>
+                                <img src="https://www.aa.com/favicon.ico" alt="American" class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+                                <span class="partner-logo-fallback" style="display:none">A</span>
                                 <span class="partner-name">American</span>
                             </label>
                             <label class="partner-checkbox" title="Southwest Airlines">
                                 <input type="checkbox" id="partner_southwest">
-                                <span class="partner-logo">❤️</span>
+                                <img src="https://www.southwest.com/favicon.ico" alt="Southwest"
+                                    class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+                                <span class="partner-logo-fallback" style="display:none">S</span>
                                 <span class="partner-name">Southwest</span>
                             </label>
                             <label class="partner-checkbox" title="JetBlue">
                                 <input type="checkbox" id="partner_jetblue">
-                                <span class="partner-logo">🔵</span>
+                                <img src="https://www.jetblue.com/favicon.ico" alt="JetBlue" class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+                                <span class="partner-logo-fallback" style="display:none">J</span>
                                 <span class="partner-name">JetBlue</span>
                             </label>
                             <label class="partner-checkbox" title="Alaska Airlines">
                                 <input type="checkbox" id="partner_alaska">
-                                <span class="partner-logo">🏔️</span>
+                                <img src="https://www.alaskaair.com/favicon.ico" alt="Alaska" class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+                                <span class="partner-logo-fallback" style="display:none">A</span>
                                 <span class="partner-name">Alaska</span>
                             </label>
                             <label class="partner-checkbox" title="British Airways">
                                 <input type="checkbox" id="partner_british">
-                                <span class="partner-logo">🇬🇧</span>
+                                <img src="https://www.britishairways.com/favicon.ico" alt="British Airways"
+                                    class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+                                <span class="partner-logo-fallback" style="display:none">B</span>
                                 <span class="partner-name">British</span>
                             </label>
                             <label class="partner-checkbox" title="Air France/KLM">
                                 <input type="checkbox" id="partner_airfrance">
-                                <span class="partner-logo">🇫🇷</span>
+                                <img src="https://www.airfrance.com/favicon.ico" alt="Air France"
+                                    class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+                                <span class="partner-logo-fallback" style="display:none">A</span>
                                 <span class="partner-name">Air France</span>
                             </label>
                             <label class="partner-checkbox" title="Singapore Airlines">
                                 <input type="checkbox" id="partner_singapore">
-                                <span class="partner-logo">🇸🇬</span>
+                                <img src="https://www.singaporeair.com/favicon.ico" alt="Singapore"
+                                    class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+                                <span class="partner-logo-fallback" style="display:none">S</span>
                                 <span class="partner-name">Singapore</span>
                             </label>
                             <label class="partner-checkbox" title="Emirates">
                                 <input type="checkbox" id="partner_emirates">
-                                <span class="partner-logo">🇦🇪</span>
+                                <img src="https://www.emirates.com/favicon.ico" alt="Emirates" class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+                                <span class="partner-logo-fallback" style="display:none">E</span>
                                 <span class="partner-name">Emirates</span>
                             </label>
                             <label class="partner-checkbox" title="ANA">
                                 <input type="checkbox" id="partner_ana">
-                                <span class="partner-logo">🇯🇵</span>
+                                <img src="https://www.ana.co.jp/favicon.ico" alt="ANA" class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+                                <span class="partner-logo-fallback" style="display:none">A</span>
                                 <span class="partner-name">ANA</span>
                             </label>
                             <label class="partner-checkbox" title="Cathay Pacific">
                                 <input type="checkbox" id="partner_cathay">
-                                <span class="partner-logo">🐉</span>
+                                <img src="https://www.cathaypacific.com/favicon.ico" alt="Cathay Pacific"
+                                    class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+                                <span class="partner-logo-fallback" style="display:none">C</span>
                                 <span class="partner-name">Cathay</span>
                             </label>
                             <label class="partner-checkbox" title="Virgin Atlantic">
                                 <input type="checkbox" id="partner_virgin">
-                                <span class="partner-logo">💜</span>
+                                <img src="https://www.virginatlantic.com/favicon.ico" alt="Virgin Atlantic"
+                                    class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+                                <span class="partner-logo-fallback" style="display:none">V</span>
                                 <span class="partner-name">Virgin</span>
                             </label>
                             <label class="partner-checkbox" title="Qantas">
                                 <input type="checkbox" id="partner_qantas">
-                                <span class="partner-logo">🦘</span>
+                                <img src="https://www.qantas.com/favicon.ico" alt="Qantas" class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+                                <span class="partner-logo-fallback" style="display:none">Q</span>
                                 <span class="partner-name">Qantas</span>
                             </label>
                         </div>
@@ -451,32 +489,46 @@
                         <div class="partners-grid" id="hotelPartnersGrid">
                             <label class="partner-checkbox" title="Marriott Bonvoy">
                                 <input type="checkbox" id="partner_marriott">
-                                <span class="partner-logo">🏨</span>
+                                <img src="https://www.marriott.com/favicon.ico" alt="Marriott" class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+                                <span class="partner-logo-fallback" style="display:none">M</span>
                                 <span class="partner-name">Marriott</span>
                             </label>
                             <label class="partner-checkbox" title="Hilton Honors">
                                 <input type="checkbox" id="partner_hilton">
-                                <span class="partner-logo">🛏️</span>
+                                <img src="https://www.hilton.com/favicon.ico" alt="Hilton" class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+                                <span class="partner-logo-fallback" style="display:none">H</span>
                                 <span class="partner-name">Hilton</span>
                             </label>
                             <label class="partner-checkbox" title="World of Hyatt">
                                 <input type="checkbox" id="partner_hyatt">
-                                <span class="partner-logo">🌍</span>
+                                <img src="https://www.hyatt.com/favicon.ico" alt="Hyatt" class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+                                <span class="partner-logo-fallback" style="display:none">H</span>
                                 <span class="partner-name">Hyatt</span>
                             </label>
                             <label class="partner-checkbox" title="IHG Rewards">
                                 <input type="checkbox" id="partner_ihg">
-                                <span class="partner-logo">🏢</span>
+                                <img src="https://www.ihg.com/favicon.ico" alt="IHG" class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+                                <span class="partner-logo-fallback" style="display:none">I</span>
                                 <span class="partner-name">IHG</span>
                             </label>
                             <label class="partner-checkbox" title="Choice Privileges">
                                 <input type="checkbox" id="partner_choice">
-                                <span class="partner-logo">🔑</span>
+                                <img src="https://www.choicehotels.com/favicon.ico" alt="Choice"
+                                    class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+                                <span class="partner-logo-fallback" style="display:none">C</span>
                                 <span class="partner-name">Choice</span>
                             </label>
                             <label class="partner-checkbox" title="Wyndham Rewards">
                                 <input type="checkbox" id="partner_wyndham">
-                                <span class="partner-logo">🌟</span>
+                                <img src="https://www.wyndhamhotels.com/favicon.ico" alt="Wyndham"
+                                    class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+                                <span class="partner-logo-fallback" style="display:none">W</span>
                                 <span class="partner-name">Wyndham</span>
                             </label>
                         </div>
