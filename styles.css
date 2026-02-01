@@ -532,6 +532,50 @@ body {
 
 .card-issuer {
     color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.card-issuer-cell {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-primary);
+}
+
+.issuer-badge {
+    width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 0.7rem;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.issuer-logo-img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.issuer-badge-fallback {
+    width: 18px;
+    height: 18px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 0.6rem;
+    border-radius: 4px;
+    flex-shrink: 0;
 }
 
 .card-fee {
@@ -578,6 +622,15 @@ body {
 .card-card-issuer {
     font-size: 0.875rem;
     color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.card-card-issuer .issuer-badge {
+    width: 16px;
+    height: 16px;
+    font-size: 0.6rem;
 }
 
 .card-card-details {
@@ -828,6 +881,13 @@ form {
     font-weight: 500;
     margin-bottom: 8px;
     color: var(--text-primary);
+}
+
+.form-group label.issuer-option,
+.form-group label.partner-checkbox {
+    display: flex;
+    margin-bottom: 0;
+    font-weight: normal;
 }
 
 .form-group .required {
@@ -1355,6 +1415,15 @@ form {
     color: var(--text-secondary);
     font-size: 0.9rem;
     margin-top: 2px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.bestcard-issuer .issuer-badge {
+    width: 16px;
+    height: 16px;
+    font-size: 0.6rem;
 }
 
 .bestcard-cashback {
@@ -1428,22 +1497,103 @@ form {
     border-bottom: 1px solid var(--border-color);
 }
 
-.partners-grid {
+/* Issuer Selection Grid */
+.issuers-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-top: 8px;
 }
 
-.partner-checkbox {
+.issuer-option {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    padding: 10px 6px;
+    gap: 6px;
+    padding: 6px 8px;
     border: 2px solid var(--border-color);
     border-radius: var(--border-radius);
     cursor: pointer;
     transition: var(--transition);
     background-color: var(--bg-secondary);
+    min-height: 36px;
+}
+
+.issuer-option:hover {
+    border-color: var(--primary-color);
+    background-color: var(--bg-hover);
+}
+
+.issuer-option.selected {
+    border-color: var(--primary-color);
+    background-color: rgba(79, 70, 229, 0.1);
+}
+
+.issuer-option .issuer-badge {
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 0.6rem;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.issuer-option .issuer-logo-img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.issuer-option .issuer-badge-fallback {
+    width: 20px;
+    height: 20px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 0.6rem;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.issuer-option .issuer-name {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.issuer-option.selected .issuer-name {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.partners-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+}
+
+.partner-checkbox {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    background-color: var(--bg-secondary);
+    min-height: 36px;
 }
 
 .partner-checkbox:hover {
@@ -1462,41 +1612,64 @@ form {
     background-color: rgba(79, 70, 229, 0.1);
 }
 
+.partner-badge {
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 0.5rem;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
 .partner-logo {
-    font-size: 1.5rem;
-    margin-bottom: 4px;
+    font-size: 1rem;
 }
 
 .partner-logo-img {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     object-fit: contain;
-    margin-bottom: 4px;
     border-radius: 4px;
+    flex-shrink: 0;
 }
 
 .partner-logo-fallback {
-    width: 24px;
-    height: 24px;
-    display: inline-flex;
+    width: 20px;
+    height: 20px;
+    display: none;
     align-items: center;
     justify-content: center;
     background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
     color: white;
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.5rem;
     border-radius: 4px;
-    margin-bottom: 4px;
+    flex-shrink: 0;
+}
+
+.partner-badge-fallback {
+    width: 20px;
+    height: 20px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 0.5rem;
+    border-radius: 4px;
+    flex-shrink: 0;
 }
 
 .partner-name {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
-    text-align: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 100%;
 }
 
 .partner-checkbox:has(input:checked) .partner-name {
@@ -1514,23 +1687,33 @@ form {
 
 .partner-chip {
     font-size: 0.9rem;
-    padding: 2px 4px;
-    background-color: var(--bg-primary);
+    padding: 0;
+    background-color: transparent;
     border-radius: 4px;
     position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 24px;
-    min-height: 24px;
 }
 
-.partner-chip .partner-logo {
-    width: 18px;
-    height: 18px;
-    object-fit: contain;
-    border-radius: 2px;
-    margin: 0;
+.partner-chip .partner-logo-img {
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+}
+
+.partner-chip .partner-badge-fallback {
+    width: 22px;
+    height: 22px;
+    font-size: 0.5rem;
+    border-radius: 4px;
+}
+
+.partner-chip .partner-badge {
+    width: 22px;
+    height: 22px;
+    font-size: 0.55rem;
+    border-radius: 4px;
 }
 
 /* Custom tooltip for partner chips */

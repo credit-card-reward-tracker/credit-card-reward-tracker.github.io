@@ -189,6 +189,21 @@ const App = (function () {
             elements.clearFiltersBtn.addEventListener('click', clearCardFilters);
         }
 
+        // Issuer selection (click to select one)
+        document.querySelectorAll('.issuer-option').forEach(option => {
+            option.addEventListener('click', () => {
+                // Remove selected from all
+                document.querySelectorAll('.issuer-option').forEach(o => o.classList.remove('selected'));
+                // Add selected to clicked
+                option.classList.add('selected');
+                // Update hidden input
+                const issuerValue = option.dataset.issuer;
+                if (elements.formCardIssuer) {
+                    elements.formCardIssuer.value = issuerValue;
+                }
+            });
+        });
+
         // Delete confirmation (unified for rewards and cards)
         elements.confirmDeleteBtn.addEventListener('click', handleDeleteConfirm);
 
@@ -398,6 +413,34 @@ const App = (function () {
     }
 
     // =====================
+    // Card Issuers
+    // =====================
+
+    const CARD_ISSUERS = {
+        'chase': { name: 'Chase', logo: 'https://www.google.com/s2/favicons?domain=chase.com&sz=64', color: '#117ACA', letter: 'C' },
+        'amex': { name: 'American Express', logo: 'https://www.google.com/s2/favicons?domain=americanexpress.com&sz=64', color: '#006FCF', letter: 'A' },
+        'citi': { name: 'Citi', logo: 'https://www.google.com/s2/favicons?domain=citi.com&sz=64', color: '#003B70', letter: 'C' },
+        'capitalone': { name: 'Capital One', logo: 'https://www.google.com/s2/favicons?domain=capitalone.com&sz=64', color: '#D03027', letter: 'C' },
+        'discover': { name: 'Discover', logo: 'https://www.google.com/s2/favicons?domain=discover.com&sz=64', color: '#FF6600', letter: 'D' },
+        'wellsfargo': { name: 'Wells Fargo', logo: 'https://www.google.com/s2/favicons?domain=wellsfargo.com&sz=64', color: '#D71E28', letter: 'W' },
+        'usbank': { name: 'US Bank', logo: 'https://www.google.com/s2/favicons?domain=usbank.com&sz=64', color: '#0C2074', letter: 'U' },
+        'barclays': { name: 'Barclays', logo: 'https://www.google.com/s2/favicons?domain=barclays.com&sz=64', color: '#00AEEF', letter: 'B' },
+        'bofa': { name: 'Bank of America', logo: 'https://www.google.com/s2/favicons?domain=bankofamerica.com&sz=64', color: '#012169', letter: 'B' },
+        'synchrony': { name: 'Synchrony', logo: 'https://www.google.com/s2/favicons?domain=synchrony.com&sz=64', color: '#00263E', letter: 'S' }
+    };
+
+    /**
+     * Get issuer info by key
+     */
+    function getIssuerInfo(issuerKey) {
+        if (CARD_ISSUERS[issuerKey]) {
+            return CARD_ISSUERS[issuerKey];
+        }
+        // Return the key as-is if not found (for custom issuers)
+        return { name: issuerKey, color: '#6366f1', letter: issuerKey ? issuerKey.charAt(0).toUpperCase() : '?' };
+    }
+
+    // =====================
     // Cashback Category Helpers
     // =====================
 
@@ -409,27 +452,27 @@ const App = (function () {
 
     const TRANSFER_PARTNERS = {
         // Airlines
-        'united': { name: 'United Airlines', logo: 'https://www.united.com/favicon.ico', type: 'airline' },
-        'delta': { name: 'Delta Air Lines', logo: 'https://www.delta.com/favicon.ico', type: 'airline' },
-        'american': { name: 'American Airlines', logo: 'https://www.aa.com/favicon.ico', type: 'airline' },
-        'southwest': { name: 'Southwest Airlines', logo: 'https://www.southwest.com/favicon.ico', type: 'airline' },
-        'jetblue': { name: 'JetBlue', logo: 'https://www.jetblue.com/favicon.ico', type: 'airline' },
-        'alaska': { name: 'Alaska Airlines', logo: 'https://www.alaskaair.com/favicon.ico', type: 'airline' },
-        'british': { name: 'British Airways', logo: 'https://www.britishairways.com/favicon.ico', type: 'airline' },
-        'airfrance': { name: 'Air France/KLM', logo: 'https://www.airfrance.com/favicon.ico', type: 'airline' },
-        'singapore': { name: 'Singapore Airlines', logo: 'https://www.singaporeair.com/favicon.ico', type: 'airline' },
-        'emirates': { name: 'Emirates', logo: 'https://www.emirates.com/favicon.ico', type: 'airline' },
-        'ana': { name: 'ANA', logo: 'https://www.ana.co.jp/favicon.ico', type: 'airline' },
-        'cathay': { name: 'Cathay Pacific', logo: 'https://www.cathaypacific.com/favicon.ico', type: 'airline' },
-        'virgin': { name: 'Virgin Atlantic', logo: 'https://www.virginatlantic.com/favicon.ico', type: 'airline' },
-        'qantas': { name: 'Qantas', logo: 'https://www.qantas.com/favicon.ico', type: 'airline' },
+        'united': { name: 'United Airlines', logo: 'https://www.google.com/s2/favicons?domain=united.com&sz=64', color: '#002244', letter: 'UA', type: 'airline' },
+        'delta': { name: 'Delta Air Lines', logo: 'https://www.google.com/s2/favicons?domain=delta.com&sz=64', color: '#003366', letter: 'DL', type: 'airline' },
+        'american': { name: 'American Airlines', logo: 'https://www.google.com/s2/favicons?domain=aa.com&sz=64', color: '#0078D2', letter: 'AA', type: 'airline' },
+        'southwest': { name: 'Southwest Airlines', logo: 'https://www.google.com/s2/favicons?domain=southwest.com&sz=64', color: '#304CB2', letter: 'SW', type: 'airline' },
+        'jetblue': { name: 'JetBlue', logo: 'https://www.google.com/s2/favicons?domain=jetblue.com&sz=64', color: '#003876', letter: 'B6', type: 'airline' },
+        'alaska': { name: 'Alaska Airlines', logo: 'https://www.google.com/s2/favicons?domain=alaskaair.com&sz=64', color: '#01426A', letter: 'AS', type: 'airline' },
+        'british': { name: 'British Airways', logo: 'https://www.google.com/s2/favicons?domain=britishairways.com&sz=64', color: '#075AAA', letter: 'BA', type: 'airline' },
+        'airfrance': { name: 'Air France/KLM', logo: 'https://www.google.com/s2/favicons?domain=airfrance.com&sz=64', color: '#002157', letter: 'AF', type: 'airline' },
+        'singapore': { name: 'Singapore Airlines', logo: 'https://www.google.com/s2/favicons?domain=singaporeair.com&sz=64', color: '#F0AB00', letter: 'SQ', type: 'airline' },
+        'emirates': { name: 'Emirates', logo: 'https://www.google.com/s2/favicons?domain=emirates.com&sz=64', color: '#D71921', letter: 'EK', type: 'airline' },
+        'ana': { name: 'ANA', logo: 'https://www.google.com/s2/favicons?domain=ana.co.jp&sz=64', color: '#13448F', letter: 'NH', type: 'airline' },
+        'cathay': { name: 'Cathay Pacific', logo: 'https://www.google.com/s2/favicons?domain=cathaypacific.com&sz=64', color: '#006564', letter: 'CX', type: 'airline' },
+        'virgin': { name: 'Virgin Atlantic', logo: 'https://www.google.com/s2/favicons?domain=virginatlantic.com&sz=64', color: '#E10A0A', letter: 'VS', type: 'airline' },
+        'qantas': { name: 'Qantas', logo: 'https://www.google.com/s2/favicons?domain=qantas.com&sz=64', color: '#E0002A', letter: 'QF', type: 'airline' },
         // Hotels
-        'marriott': { name: 'Marriott Bonvoy', logo: 'https://www.marriott.com/favicon.ico', type: 'hotel' },
-        'hilton': { name: 'Hilton Honors', logo: 'https://www.hilton.com/favicon.ico', type: 'hotel' },
-        'hyatt': { name: 'World of Hyatt', logo: 'https://www.hyatt.com/favicon.ico', type: 'hotel' },
-        'ihg': { name: 'IHG Rewards', logo: 'https://www.ihg.com/favicon.ico', type: 'hotel' },
-        'choice': { name: 'Choice Privileges', logo: 'https://www.choicehotels.com/favicon.ico', type: 'hotel' },
-        'wyndham': { name: 'Wyndham Rewards', logo: 'https://www.wyndhamhotels.com/favicon.ico', type: 'hotel' }
+        'marriott': { name: 'Marriott Bonvoy', logo: 'https://www.google.com/s2/favicons?domain=marriott.com&sz=64', color: '#1C1C1C', letter: 'MB', type: 'hotel' },
+        'hilton': { name: 'Hilton Honors', logo: 'https://www.google.com/s2/favicons?domain=hilton.com&sz=64', color: '#104C97', letter: 'HH', type: 'hotel' },
+        'hyatt': { name: 'World of Hyatt', logo: 'https://www.google.com/s2/favicons?domain=hyatt.com&sz=64', color: '#8B734B', letter: 'WH', type: 'hotel' },
+        'ihg': { name: 'IHG Rewards', logo: 'https://www.google.com/s2/favicons?domain=ihg.com&sz=64', color: '#1D4F91', letter: 'IHG', type: 'hotel' },
+        'choice': { name: 'Choice Privileges', logo: 'https://www.google.com/s2/favicons?domain=choicehotels.com&sz=64', color: '#00467F', letter: 'CP', type: 'hotel' },
+        'wyndham': { name: 'Wyndham Rewards', logo: 'https://www.google.com/s2/favicons?domain=wyndhamhotels.com&sz=64', color: '#00457C', letter: 'WR', type: 'hotel' }
     };
 
     /**
@@ -477,7 +520,10 @@ const App = (function () {
         const partner = TRANSFER_PARTNERS[partnerKey];
         return {
             name: partner ? partner.name : partnerKey,
-            logo: partner ? partner.logo : '🔄'
+            logo: partner ? partner.logo : null,
+            color: partner ? partner.color : '#6366f1',
+            letter: partner ? partner.letter : (partnerKey ? partnerKey.charAt(0).toUpperCase() : '?'),
+            type: partner ? partner.type : 'other'
         };
     }
 
@@ -490,9 +536,21 @@ const App = (function () {
         return `<div class="card-partners">
             ${transferPartners.map(p => {
             const info = getPartnerInfo(p);
-            return `<span class="partner-chip" title="${escapeHtml(info.name)}"><img src="${info.logo}" alt="${escapeHtml(info.name)}" class="partner-logo" onerror="this.style.display='none';this.parentElement.innerHTML='${info.name.charAt(0)}'"></span>`;
+            return `<span class="partner-chip" title="${escapeHtml(info.name)}"><img src="${info.logo}" alt="${escapeHtml(info.name)}" class="partner-logo-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><span class="partner-badge-fallback" style="background-color: ${info.color}; display: none;">${info.letter}</span></span>`;
         }).join('')}
         </div>`;
+    }
+
+    /**
+     * Generate HTML for issuer display with logo
+     */
+    function renderIssuerHtml(issuerKey, className = 'card-issuer') {
+        if (!issuerKey) return '';
+        const info = getIssuerInfo(issuerKey);
+        if (info.logo) {
+            return `<div class="${className}"><img src="${info.logo}" alt="${escapeHtml(info.name)}" class="issuer-logo-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><span class="issuer-badge-fallback" style="background-color: ${info.color}; display: none;">${info.letter}</span><span>${escapeHtml(info.name)}</span></div>`;
+        }
+        return `<div class="${className}"><span class="issuer-badge" style="background-color: ${info.color}">${info.letter}</span><span>${escapeHtml(info.name)}</span></div>`;
     }
 
     /**
@@ -561,6 +619,29 @@ const App = (function () {
                 input.value = '';
             }
         });
+    }
+
+    /**
+     * Clear issuer selection UI
+     */
+    function clearIssuerSelection() {
+        document.querySelectorAll('.issuer-option').forEach(o => o.classList.remove('selected'));
+        if (elements.formCardIssuer) {
+            elements.formCardIssuer.value = '';
+        }
+    }
+
+    /**
+     * Select an issuer in the UI
+     */
+    function selectIssuer(issuerKey) {
+        document.querySelectorAll('.issuer-option').forEach(o => o.classList.remove('selected'));
+        if (issuerKey) {
+            const option = document.querySelector(`.issuer-option[data-issuer="${issuerKey}"]`);
+            if (option) {
+                option.classList.add('selected');
+            }
+        }
     }
 
     /**
@@ -678,6 +759,7 @@ const App = (function () {
         elements.formCardId.value = '';
         clearCashbackFields();
         clearTransferPartnerFields();
+        clearIssuerSelection();
         elements.cardModal.classList.add('active');
         elements.formCardName.focus();
     }
@@ -700,6 +782,9 @@ const App = (function () {
         elements.formCardOpenDate.value = card.openDate || '';
         elements.formCardAnnualFee.value = card.annualFee || '';
         elements.formCardNotes.value = card.notes || '';
+
+        // Populate issuer selection
+        selectIssuer(card.issuer || '');
 
         // Populate cashback categories
         populateCashbackFields(card.cashbackByCategory || {});
@@ -1141,12 +1226,12 @@ const App = (function () {
                     <tr data-id="${card.id}">
                         <td class="col-name">
                             <div class="card-name-main">${escapeHtml(card.name)}</div>
-                            ${card.issuer ? `<div class="card-issuer">${escapeHtml(card.issuer)}</div>` : ''}
+                            ${renderIssuerHtml(card.issuer, 'card-issuer')}
                             ${partnersHtml}
                             ${cashbackHtml}
                         </td>
                         <td class="col-issuer">
-                            <span>${escapeHtml(card.issuer) || '-'}</span>
+                            ${renderIssuerHtml(card.issuer, 'card-issuer-cell') || '-'}
                         </td>
                         <td class="col-open-date">
                             <span>${openDateDisplay}</span>
@@ -1190,7 +1275,7 @@ const App = (function () {
                             <div class="card-title-section">
                                 <div>
                                     <div class="card-title">${escapeHtml(card.name)}</div>
-                                    ${card.issuer ? `<div class="card-card-issuer">${escapeHtml(card.issuer)}</div>` : ''}
+                                    ${renderIssuerHtml(card.issuer, 'card-card-issuer')}
                                 </div>
                             </div>
                             <div class="card-actions">
@@ -1247,9 +1332,10 @@ const App = (function () {
 
             elements.filterIssuer.innerHTML = '<option value="">All Issuers</option>';
             issuers.forEach(issuer => {
+                const info = getIssuerInfo(issuer);
                 const option = document.createElement('option');
                 option.value = issuer;
-                option.textContent = issuer;
+                option.textContent = info.name;
                 if (issuer === currentIssuer) option.selected = true;
                 elements.filterIssuer.appendChild(option);
             });
@@ -1271,7 +1357,7 @@ const App = (function () {
                 const info = getPartnerInfo(partner);
                 const option = document.createElement('option');
                 option.value = partner;
-                option.textContent = `${info.logo} ${info.name}`;
+                option.textContent = info.name;
                 if (partner === currentPartner) option.selected = true;
                 elements.filterPartner.appendChild(option);
             });
@@ -1386,7 +1472,7 @@ const App = (function () {
                     ? `<div class="bestcard-partners">
                         ${card.transferPartners.map(p => {
                         const info = getPartnerInfo(p);
-                        return `<span class="partner-chip" title="${escapeHtml(info.name)}"><img src="${info.logo}" alt="${escapeHtml(info.name)}" class="partner-logo" onerror="this.style.display='none';this.parentElement.innerHTML='${info.name.charAt(0)}'"></span>`;
+                        return `<span class="partner-chip" title="${escapeHtml(info.name)}"><img src="${info.logo}" alt="${escapeHtml(info.name)}" class="partner-logo-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><span class="partner-badge-fallback" style="background-color: ${info.color}; display: none;">${info.letter}</span></span>`;
                     }).join('')}
                        </div>`
                     : '';
@@ -1398,7 +1484,7 @@ const App = (function () {
                                         ${escapeHtml(card.name)}
                                         ${isBest ? '<span class="best-badge">⭐ Best</span>' : ''}
                                     </div>
-                                    ${card.issuer ? `<div class="bestcard-issuer">${escapeHtml(card.issuer)}</div>` : ''}
+                                    ${renderIssuerHtml(card.issuer, 'bestcard-issuer')}
                                     ${partnersHtml}
                                 </div>
                                 <div class="bestcard-cashback">

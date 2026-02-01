@@ -221,6 +221,8 @@ const Storage = (function () {
             openDate: cardData.openDate || '',
             annualFee: cardData.annualFee || 0,
             notes: cardData.notes || '',
+            cashbackByCategory: cardData.cashbackByCategory || {},
+            transferPartners: cardData.transferPartners || [],
             createdAt: now
         };
 

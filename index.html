@@ -311,8 +311,86 @@
                     <input type="text" id="cardNameInput" required placeholder="e.g., Chase Sapphire Preferred">
                 </div>
                 <div class="form-group">
-                    <label for="cardIssuer">Issuer</label>
-                    <input type="text" id="cardIssuer" placeholder="e.g., Chase, Amex, Citi">
+                    <label>Issuer</label>
+                    <input type="hidden" id="cardIssuer" value="">
+                    <div class="issuers-grid">
+                        <label class="issuer-option" title="Chase" data-issuer="chase">
+                            <img src="https://www.google.com/s2/favicons?domain=chase.com&sz=64" alt="Chase" class="issuer-logo-img"
+                                onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                            <span class="issuer-badge-fallback"
+                                style="background-color: #117ACA; display: none;">C</span>
+                            <span class="issuer-name">Chase</span>
+                        </label>
+                        <label class="issuer-option" title="American Express" data-issuer="amex">
+                            <img src="https://www.google.com/s2/favicons?domain=americanexpress.com&sz=64" alt="Amex" class="issuer-logo-img"
+                                onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                            <span class="issuer-badge-fallback"
+                                style="background-color: #006FCF; display: none;">A</span>
+                            <span class="issuer-name">Amex</span>
+                        </label>
+                        <label class="issuer-option" title="Citi" data-issuer="citi">
+                            <img src="https://www.google.com/s2/favicons?domain=citi.com&sz=64" alt="Citi" class="issuer-logo-img"
+                                onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                            <span class="issuer-badge-fallback"
+                                style="background-color: #003B70; display: none;">C</span>
+                            <span class="issuer-name">Citi</span>
+                        </label>
+                        <label class="issuer-option" title="Capital One" data-issuer="capitalone">
+                            <img src="https://www.google.com/s2/favicons?domain=capitalone.com&sz=64" alt="Capital One"
+                                class="issuer-logo-img"
+                                onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                            <span class="issuer-badge-fallback"
+                                style="background-color: #D03027; display: none;">C</span>
+                            <span class="issuer-name">Capital One</span>
+                        </label>
+                        <label class="issuer-option" title="Discover" data-issuer="discover">
+                            <img src="https://www.google.com/s2/favicons?domain=discover.com&sz=64" alt="Discover" class="issuer-logo-img"
+                                onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                            <span class="issuer-badge-fallback"
+                                style="background-color: #FF6600; display: none;">D</span>
+                            <span class="issuer-name">Discover</span>
+                        </label>
+                        <label class="issuer-option" title="Wells Fargo" data-issuer="wellsfargo">
+                            <img src="https://www.google.com/s2/favicons?domain=wellsfargo.com&sz=64" alt="Wells Fargo"
+                                class="issuer-logo-img"
+                                onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                            <span class="issuer-badge-fallback"
+                                style="background-color: #D71E28; display: none;">W</span>
+                            <span class="issuer-name">Wells Fargo</span>
+                        </label>
+                        <label class="issuer-option" title="US Bank" data-issuer="usbank">
+                            <img src="https://www.google.com/s2/favicons?domain=usbank.com&sz=64" alt="US Bank" class="issuer-logo-img"
+                                onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                            <span class="issuer-badge-fallback"
+                                style="background-color: #0C2074; display: none;">U</span>
+                            <span class="issuer-name">US Bank</span>
+                        </label>
+                        <label class="issuer-option" title="Barclays" data-issuer="barclays">
+                            <img src="https://www.google.com/s2/favicons?domain=barclays.com&sz=64" alt="Barclays" class="issuer-logo-img"
+                                onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                            <span class="issuer-badge-fallback"
+                                style="background-color: #00AEEF; display: none;">B</span>
+                            <span class="issuer-name">Barclays</span>
+                        </label>
+                        <label class="issuer-option" title="Bank of America" data-issuer="bofa">
+                            <img src="https://www.google.com/s2/favicons?domain=bankofamerica.com&sz=64" alt="BofA" class="issuer-logo-img"
+                                onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                            <span class="issuer-badge-fallback"
+                                style="background-color: #012169; display: none;">B</span>
+                            <span class="issuer-name">BofA</span>
+                        </label>
+                        <label class="issuer-option" title="Synchrony" data-issuer="synchrony">
+                            <img src="https://www.google.com/s2/favicons?domain=synchrony.com&sz=64" alt="Synchrony" class="issuer-logo-img"
+                                onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                            <span class="issuer-badge-fallback"
+                                style="background-color: #00263E; display: none;">S</span>
+                            <span class="issuer-name">Synchrony</span>
+                        </label>
+                        <label class="issuer-option" title="Other" data-issuer="other">
+                            <span class="issuer-badge" style="background-color: #6366f1">?</span>
+                            <span class="issuer-name">Other</span>
+                        </label>
+                    </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -379,106 +457,121 @@
                         <div class="partners-grid" id="airlinePartnersGrid">
                             <label class="partner-checkbox" title="United Airlines">
                                 <input type="checkbox" id="partner_united">
-                                <img src="https://www.united.com/favicon.ico" alt="United" class="partner-logo-img"
-                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
-                                <span class="partner-logo-fallback" style="display:none">U</span>
+                                <img src="https://www.google.com/s2/favicons?domain=united.com&sz=64" alt="United" class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <span class="partner-badge-fallback"
+                                    style="background-color: #002244; display: none;">UA</span>
                                 <span class="partner-name">United</span>
                             </label>
                             <label class="partner-checkbox" title="Delta Air Lines">
                                 <input type="checkbox" id="partner_delta">
-                                <img src="https://www.delta.com/favicon.ico" alt="Delta" class="partner-logo-img"
-                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
-                                <span class="partner-logo-fallback" style="display:none">D</span>
+                                <img src="https://www.google.com/s2/favicons?domain=delta.com&sz=64" alt="Delta" class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <span class="partner-badge-fallback"
+                                    style="background-color: #003366; display: none;">DL</span>
                                 <span class="partner-name">Delta</span>
                             </label>
                             <label class="partner-checkbox" title="American Airlines">
                                 <input type="checkbox" id="partner_american">
-                                <img src="https://www.aa.com/favicon.ico" alt="American" class="partner-logo-img"
-                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
-                                <span class="partner-logo-fallback" style="display:none">A</span>
+                                <img src="https://www.google.com/s2/favicons?domain=aa.com&sz=64" alt="American" class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <span class="partner-badge-fallback"
+                                    style="background-color: #0078D2; display: none;">AA</span>
                                 <span class="partner-name">American</span>
                             </label>
                             <label class="partner-checkbox" title="Southwest Airlines">
                                 <input type="checkbox" id="partner_southwest">
-                                <img src="https://www.southwest.com/favicon.ico" alt="Southwest"
+                                <img src="https://www.google.com/s2/favicons?domain=southwest.com&sz=64" alt="Southwest"
                                     class="partner-logo-img"
-                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
-                                <span class="partner-logo-fallback" style="display:none">S</span>
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <span class="partner-badge-fallback"
+                                    style="background-color: #304CB2; display: none;">SW</span>
                                 <span class="partner-name">Southwest</span>
                             </label>
                             <label class="partner-checkbox" title="JetBlue">
                                 <input type="checkbox" id="partner_jetblue">
-                                <img src="https://www.jetblue.com/favicon.ico" alt="JetBlue" class="partner-logo-img"
-                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
-                                <span class="partner-logo-fallback" style="display:none">J</span>
+                                <img src="https://www.google.com/s2/favicons?domain=jetblue.com&sz=64" alt="JetBlue" class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <span class="partner-badge-fallback"
+                                    style="background-color: #003876; display: none;">B6</span>
                                 <span class="partner-name">JetBlue</span>
                             </label>
                             <label class="partner-checkbox" title="Alaska Airlines">
                                 <input type="checkbox" id="partner_alaska">
-                                <img src="https://www.alaskaair.com/favicon.ico" alt="Alaska" class="partner-logo-img"
-                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
-                                <span class="partner-logo-fallback" style="display:none">A</span>
+                                <img src="https://www.google.com/s2/favicons?domain=alaskaair.com&sz=64" alt="Alaska" class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <span class="partner-badge-fallback"
+                                    style="background-color: #01426A; display: none;">AS</span>
                                 <span class="partner-name">Alaska</span>
                             </label>
                             <label class="partner-checkbox" title="British Airways">
                                 <input type="checkbox" id="partner_british">
-                                <img src="https://www.britishairways.com/favicon.ico" alt="British Airways"
+                                <img src="https://www.google.com/s2/favicons?domain=britishairways.com&sz=64" alt="British Airways"
                                     class="partner-logo-img"
-                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
-                                <span class="partner-logo-fallback" style="display:none">B</span>
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <span class="partner-badge-fallback"
+                                    style="background-color: #075AAA; display: none;">BA</span>
                                 <span class="partner-name">British</span>
                             </label>
                             <label class="partner-checkbox" title="Air France/KLM">
                                 <input type="checkbox" id="partner_airfrance">
-                                <img src="https://www.airfrance.com/favicon.ico" alt="Air France"
+                                <img src="https://www.google.com/s2/favicons?domain=airfrance.com&sz=64" alt="Air France"
                                     class="partner-logo-img"
-                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
-                                <span class="partner-logo-fallback" style="display:none">A</span>
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <span class="partner-badge-fallback"
+                                    style="background-color: #002157; display: none;">AF</span>
                                 <span class="partner-name">Air France</span>
                             </label>
                             <label class="partner-checkbox" title="Singapore Airlines">
                                 <input type="checkbox" id="partner_singapore">
-                                <img src="https://www.singaporeair.com/favicon.ico" alt="Singapore"
+                                <img src="https://www.google.com/s2/favicons?domain=singaporeair.com&sz=64" alt="Singapore"
                                     class="partner-logo-img"
-                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
-                                <span class="partner-logo-fallback" style="display:none">S</span>
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <span class="partner-badge-fallback"
+                                    style="background-color: #F0AB00; display: none;">SQ</span>
                                 <span class="partner-name">Singapore</span>
                             </label>
                             <label class="partner-checkbox" title="Emirates">
                                 <input type="checkbox" id="partner_emirates">
-                                <img src="https://www.emirates.com/favicon.ico" alt="Emirates" class="partner-logo-img"
-                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
-                                <span class="partner-logo-fallback" style="display:none">E</span>
+                                <img src="https://www.google.com/s2/favicons?domain=emirates.com&sz=64" alt="Emirates"
+                                    class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <span class="partner-badge-fallback"
+                                    style="background-color: #D71921; display: none;">EK</span>
                                 <span class="partner-name">Emirates</span>
                             </label>
                             <label class="partner-checkbox" title="ANA">
                                 <input type="checkbox" id="partner_ana">
-                                <img src="https://www.ana.co.jp/favicon.ico" alt="ANA" class="partner-logo-img"
-                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
-                                <span class="partner-logo-fallback" style="display:none">A</span>
+                                <img src="https://www.google.com/s2/favicons?domain=ana.co.jp&sz=64" alt="ANA" class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <span class="partner-badge-fallback"
+                                    style="background-color: #13448F; display: none;">NH</span>
                                 <span class="partner-name">ANA</span>
                             </label>
                             <label class="partner-checkbox" title="Cathay Pacific">
                                 <input type="checkbox" id="partner_cathay">
-                                <img src="https://www.cathaypacific.com/favicon.ico" alt="Cathay Pacific"
+                                <img src="https://www.google.com/s2/favicons?domain=cathaypacific.com&sz=64" alt="Cathay"
                                     class="partner-logo-img"
-                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
-                                <span class="partner-logo-fallback" style="display:none">C</span>
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <span class="partner-badge-fallback"
+                                    style="background-color: #006564; display: none;">CX</span>
                                 <span class="partner-name">Cathay</span>
                             </label>
                             <label class="partner-checkbox" title="Virgin Atlantic">
                                 <input type="checkbox" id="partner_virgin">
-                                <img src="https://www.virginatlantic.com/favicon.ico" alt="Virgin Atlantic"
+                                <img src="https://www.google.com/s2/favicons?domain=virginatlantic.com&sz=64" alt="Virgin"
                                     class="partner-logo-img"
-                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
-                                <span class="partner-logo-fallback" style="display:none">V</span>
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <span class="partner-badge-fallback"
+                                    style="background-color: #E10A0A; display: none;">VS</span>
                                 <span class="partner-name">Virgin</span>
                             </label>
                             <label class="partner-checkbox" title="Qantas">
                                 <input type="checkbox" id="partner_qantas">
-                                <img src="https://www.qantas.com/favicon.ico" alt="Qantas" class="partner-logo-img"
-                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
-                                <span class="partner-logo-fallback" style="display:none">Q</span>
+                                <img src="https://www.google.com/s2/favicons?domain=qantas.com&sz=64" alt="Qantas" class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <span class="partner-badge-fallback"
+                                    style="background-color: #E0002A; display: none;">QF</span>
                                 <span class="partner-name">Qantas</span>
                             </label>
                         </div>
@@ -489,46 +582,53 @@
                         <div class="partners-grid" id="hotelPartnersGrid">
                             <label class="partner-checkbox" title="Marriott Bonvoy">
                                 <input type="checkbox" id="partner_marriott">
-                                <img src="https://www.marriott.com/favicon.ico" alt="Marriott" class="partner-logo-img"
-                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
-                                <span class="partner-logo-fallback" style="display:none">M</span>
+                                <img src="https://www.google.com/s2/favicons?domain=marriott.com&sz=64" alt="Marriott"
+                                    class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <span class="partner-badge-fallback"
+                                    style="background-color: #1C1C1C; display: none;">MB</span>
                                 <span class="partner-name">Marriott</span>
                             </label>
                             <label class="partner-checkbox" title="Hilton Honors">
                                 <input type="checkbox" id="partner_hilton">
-                                <img src="https://www.hilton.com/favicon.ico" alt="Hilton" class="partner-logo-img"
-                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
-                                <span class="partner-logo-fallback" style="display:none">H</span>
+                                <img src="https://www.google.com/s2/favicons?domain=hilton.com&sz=64" alt="Hilton" class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <span class="partner-badge-fallback"
+                                    style="background-color: #104C97; display: none;">HH</span>
                                 <span class="partner-name">Hilton</span>
                             </label>
                             <label class="partner-checkbox" title="World of Hyatt">
                                 <input type="checkbox" id="partner_hyatt">
-                                <img src="https://www.hyatt.com/favicon.ico" alt="Hyatt" class="partner-logo-img"
-                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
-                                <span class="partner-logo-fallback" style="display:none">H</span>
+                                <img src="https://www.google.com/s2/favicons?domain=hyatt.com&sz=64" alt="Hyatt" class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <span class="partner-badge-fallback"
+                                    style="background-color: #8B734B; display: none;">WH</span>
                                 <span class="partner-name">Hyatt</span>
                             </label>
                             <label class="partner-checkbox" title="IHG Rewards">
                                 <input type="checkbox" id="partner_ihg">
-                                <img src="https://www.ihg.com/favicon.ico" alt="IHG" class="partner-logo-img"
-                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
-                                <span class="partner-logo-fallback" style="display:none">I</span>
+                                <img src="https://www.google.com/s2/favicons?domain=ihg.com&sz=64" alt="IHG" class="partner-logo-img"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <span class="partner-badge-fallback"
+                                    style="background-color: #1D4F91; display: none;">IHG</span>
                                 <span class="partner-name">IHG</span>
                             </label>
                             <label class="partner-checkbox" title="Choice Privileges">
                                 <input type="checkbox" id="partner_choice">
-                                <img src="https://www.choicehotels.com/favicon.ico" alt="Choice"
+                                <img src="https://www.google.com/s2/favicons?domain=choicehotels.com&sz=64" alt="Choice"
                                     class="partner-logo-img"
-                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
-                                <span class="partner-logo-fallback" style="display:none">C</span>
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <span class="partner-badge-fallback"
+                                    style="background-color: #00467F; display: none;">CP</span>
                                 <span class="partner-name">Choice</span>
                             </label>
                             <label class="partner-checkbox" title="Wyndham Rewards">
                                 <input type="checkbox" id="partner_wyndham">
-                                <img src="https://www.wyndhamhotels.com/favicon.ico" alt="Wyndham"
+                                <img src="https://www.google.com/s2/favicons?domain=wyndhamhotels.com&sz=64" alt="Wyndham"
                                     class="partner-logo-img"
-                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
-                                <span class="partner-logo-fallback" style="display:none">W</span>
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <span class="partner-badge-fallback"
+                                    style="background-color: #00457C; display: none;">WR</span>
                                 <span class="partner-name">Wyndham</span>
                             </label>
                         </div>
