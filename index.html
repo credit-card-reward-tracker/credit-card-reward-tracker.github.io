@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="Track and never miss your credit card benefits and rewards">
-    <meta name="theme-color" content="#4f46e5">
+    <meta name="theme-color" content="#667eea">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="CC Rewards">
@@ -25,48 +25,62 @@
 
 <body>
     <div class="app-container">
-        <header class="app-header">
-            <div class="header-top">
-                <div class="user-section" id="userSection">
-                    <!-- Signed out state -->
-                    <div class="user-signed-out" id="signedOutUI">
-                        <button id="signInBtn" class="btn btn-outline btn-small">
-                            <svg class="google-icon" viewBox="0 0 24 24" width="18" height="18">
-                                <path fill="#4285F4"
-                                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                                <path fill="#34A853"
-                                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                                <path fill="#FBBC05"
-                                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                                <path fill="#EA4335"
-                                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                            </svg>
-                            Sign in
-                        </button>
-                    </div>
-                    <!-- Signed in state -->
-                    <div class="user-signed-in hidden" id="signedInUI">
-                        <img class="user-avatar" id="userAvatar" src="" alt="">
-                        <span class="user-name" id="userName"></span>
-                        <button id="signOutBtn" class="btn btn-text btn-small">Sign out</button>
-                    </div>
+        <!-- Top Bar with User Info and Theme Picker -->
+        <div class="top-bar">
+            <div class="theme-picker">
+                <label for="themeSelect">🎨</label>
+                <select id="themeSelect" class="theme-select">
+                    <option value="aurora">Aurora</option>
+                    <option value="ocean">Ocean</option>
+                    <option value="sunset">Sunset</option>
+                    <option value="forest">Forest</option>
+                    <option value="midnight">Midnight</option>
+                </select>
+            </div>
+            <div class="user-section" id="userSection">
+                <!-- Signed out state -->
+                <div class="user-signed-out" id="signedOutUI">
+                    <button type="button" id="signInBtn" class="btn btn-outline btn-small">
+                        <svg class="google-icon" viewBox="0 0 24 24" width="18" height="18">
+                            <path fill="#4285F4"
+                                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                            <path fill="#34A853"
+                                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                            <path fill="#FBBC05"
+                                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                            <path fill="#EA4335"
+                                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                        </svg>
+                        Sign in
+                    </button>
+                </div>
+                <!-- Signed in state -->
+                <div class="user-signed-in hidden" id="signedInUI">
+                    <img class="user-avatar" id="userAvatar"
+                        src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+                        alt="User avatar">
+                    <span class="user-name" id="userName"></span>
+                    <button type="button" id="signOutBtn" class="btn btn-text btn-small">Sign out</button>
                 </div>
             </div>
-            <h1>💳 Credit Card Tracker</h1>
-            <p class="subtitle">Track your cards and never miss rewards</p>
+        </div>
+
+        <header class="app-header">
+            <h1>✨ Credit Card Rewards ✨</h1>
+            <p class="subtitle">💎 Track your cards &amp; maximize every reward! 🚀</p>
         </header>
 
         <!-- Navigation Tabs -->
         <nav class="nav-tabs">
-            <button class="nav-tab active" data-page="rewards" id="tabRewards">
+            <button type="button" class="nav-tab active" data-page="rewards" id="tabRewards">
                 <span class="nav-icon">🎁</span>
                 <span class="nav-label">Rewards</span>
             </button>
-            <button class="nav-tab" data-page="cards" id="tabCards">
+            <button type="button" class="nav-tab" data-page="cards" id="tabCards">
                 <span class="nav-icon">💳</span>
                 <span class="nav-label">Cards</span>
             </button>
-            <button class="nav-tab" data-page="bestcard" id="tabBestCard">
+            <button type="button" class="nav-tab" data-page="bestcard" id="tabBestCard">
                 <span class="nav-icon">⭐</span>
                 <span class="nav-label">Best Card</span>
             </button>
@@ -76,7 +90,7 @@
             <!-- ==================== REWARDS PAGE ==================== -->
             <div class="page active" id="pageRewards">
                 <div class="controls">
-                    <button id="addRewardBtn" class="btn btn-primary">
+                    <button type="button" id="addRewardBtn" class="btn btn-primary">
                         <span class="btn-icon">+</span> Add Reward
                     </button>
                     <div class="stats">
@@ -128,7 +142,7 @@
             <!-- ==================== CARDS PAGE ==================== -->
             <div class="page" id="pageCards">
                 <div class="controls">
-                    <button id="addCardBtn" class="btn btn-primary" onclick="App.openAddCardModal()">
+                    <button type="button" id="addCardBtn" class="btn btn-primary" onclick="App.openAddCardModal()">
                         <span class="btn-icon">+</span> Add Card
                     </button>
                     <div class="stats">
@@ -165,7 +179,7 @@
                         <label for="filterDateTo">Opened Before</label>
                         <input type="date" id="filterDateTo">
                     </div>
-                    <button class="btn btn-text btn-small" id="clearFiltersBtn">Clear Filters</button>
+                    <button type="button" class="btn btn-text btn-small" id="clearFiltersBtn">Clear Filters</button>
                 </div>
 
                 <div class="cards-container">
@@ -237,7 +251,7 @@
         <div class="modal">
             <div class="modal-header">
                 <h2 id="modalTitle">Add Reward</h2>
-                <button class="modal-close" id="closeModal">&times;</button>
+                <button type="button" class="modal-close" id="closeModal">&times;</button>
             </div>
             <form id="rewardForm">
                 <input type="hidden" id="rewardId">
@@ -302,7 +316,7 @@
         <div class="modal">
             <div class="modal-header">
                 <h2 id="cardModalTitle">Add Card</h2>
-                <button class="modal-close" id="closeCardModal">&times;</button>
+                <button type="button" class="modal-close" id="closeCardModal">&times;</button>
             </div>
             <form id="cardForm">
                 <input type="hidden" id="cardId">
@@ -315,21 +329,24 @@
                     <input type="hidden" id="cardIssuer" value="">
                     <div class="issuers-grid">
                         <label class="issuer-option" title="Chase" data-issuer="chase">
-                            <img src="https://www.google.com/s2/favicons?domain=chase.com&sz=64" alt="Chase" class="issuer-logo-img"
+                            <img src="https://www.google.com/s2/favicons?domain=chase.com&sz=64" alt="Chase"
+                                class="issuer-logo-img"
                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                             <span class="issuer-badge-fallback"
                                 style="background-color: #117ACA; display: none;">C</span>
                             <span class="issuer-name">Chase</span>
                         </label>
                         <label class="issuer-option" title="American Express" data-issuer="amex">
-                            <img src="https://www.google.com/s2/favicons?domain=americanexpress.com&sz=64" alt="Amex" class="issuer-logo-img"
+                            <img src="https://www.google.com/s2/favicons?domain=americanexpress.com&sz=64" alt="Amex"
+                                class="issuer-logo-img"
                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                             <span class="issuer-badge-fallback"
                                 style="background-color: #006FCF; display: none;">A</span>
                             <span class="issuer-name">Amex</span>
                         </label>
                         <label class="issuer-option" title="Citi" data-issuer="citi">
-                            <img src="https://www.google.com/s2/favicons?domain=citi.com&sz=64" alt="Citi" class="issuer-logo-img"
+                            <img src="https://www.google.com/s2/favicons?domain=citi.com&sz=64" alt="Citi"
+                                class="issuer-logo-img"
                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                             <span class="issuer-badge-fallback"
                                 style="background-color: #003B70; display: none;">C</span>
@@ -344,7 +361,8 @@
                             <span class="issuer-name">Capital One</span>
                         </label>
                         <label class="issuer-option" title="Discover" data-issuer="discover">
-                            <img src="https://www.google.com/s2/favicons?domain=discover.com&sz=64" alt="Discover" class="issuer-logo-img"
+                            <img src="https://www.google.com/s2/favicons?domain=discover.com&sz=64" alt="Discover"
+                                class="issuer-logo-img"
                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                             <span class="issuer-badge-fallback"
                                 style="background-color: #FF6600; display: none;">D</span>
@@ -359,28 +377,32 @@
                             <span class="issuer-name">Wells Fargo</span>
                         </label>
                         <label class="issuer-option" title="US Bank" data-issuer="usbank">
-                            <img src="https://www.google.com/s2/favicons?domain=usbank.com&sz=64" alt="US Bank" class="issuer-logo-img"
+                            <img src="https://www.google.com/s2/favicons?domain=usbank.com&sz=64" alt="US Bank"
+                                class="issuer-logo-img"
                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                             <span class="issuer-badge-fallback"
                                 style="background-color: #0C2074; display: none;">U</span>
                             <span class="issuer-name">US Bank</span>
                         </label>
                         <label class="issuer-option" title="Barclays" data-issuer="barclays">
-                            <img src="https://www.google.com/s2/favicons?domain=barclays.com&sz=64" alt="Barclays" class="issuer-logo-img"
+                            <img src="https://www.google.com/s2/favicons?domain=barclays.com&sz=64" alt="Barclays"
+                                class="issuer-logo-img"
                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                             <span class="issuer-badge-fallback"
                                 style="background-color: #00AEEF; display: none;">B</span>
                             <span class="issuer-name">Barclays</span>
                         </label>
                         <label class="issuer-option" title="Bank of America" data-issuer="bofa">
-                            <img src="https://www.google.com/s2/favicons?domain=bankofamerica.com&sz=64" alt="BofA" class="issuer-logo-img"
+                            <img src="https://www.google.com/s2/favicons?domain=bankofamerica.com&sz=64" alt="BofA"
+                                class="issuer-logo-img"
                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                             <span class="issuer-badge-fallback"
                                 style="background-color: #012169; display: none;">B</span>
                             <span class="issuer-name">BofA</span>
                         </label>
                         <label class="issuer-option" title="Synchrony" data-issuer="synchrony">
-                            <img src="https://www.google.com/s2/favicons?domain=synchrony.com&sz=64" alt="Synchrony" class="issuer-logo-img"
+                            <img src="https://www.google.com/s2/favicons?domain=synchrony.com&sz=64" alt="Synchrony"
+                                class="issuer-logo-img"
                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                             <span class="issuer-badge-fallback"
                                 style="background-color: #00263E; display: none;">S</span>
@@ -457,7 +479,8 @@
                         <div class="partners-grid" id="airlinePartnersGrid">
                             <label class="partner-checkbox" title="United Airlines">
                                 <input type="checkbox" id="partner_united">
-                                <img src="https://www.google.com/s2/favicons?domain=united.com&sz=64" alt="United" class="partner-logo-img"
+                                <img src="https://www.google.com/s2/favicons?domain=united.com&sz=64" alt="United"
+                                    class="partner-logo-img"
                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                                 <span class="partner-badge-fallback"
                                     style="background-color: #002244; display: none;">UA</span>
@@ -465,7 +488,8 @@
                             </label>
                             <label class="partner-checkbox" title="Delta Air Lines">
                                 <input type="checkbox" id="partner_delta">
-                                <img src="https://www.google.com/s2/favicons?domain=delta.com&sz=64" alt="Delta" class="partner-logo-img"
+                                <img src="https://www.google.com/s2/favicons?domain=delta.com&sz=64" alt="Delta"
+                                    class="partner-logo-img"
                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                                 <span class="partner-badge-fallback"
                                     style="background-color: #003366; display: none;">DL</span>
@@ -473,7 +497,8 @@
                             </label>
                             <label class="partner-checkbox" title="American Airlines">
                                 <input type="checkbox" id="partner_american">
-                                <img src="https://www.google.com/s2/favicons?domain=aa.com&sz=64" alt="American" class="partner-logo-img"
+                                <img src="https://www.google.com/s2/favicons?domain=aa.com&sz=64" alt="American"
+                                    class="partner-logo-img"
                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                                 <span class="partner-badge-fallback"
                                     style="background-color: #0078D2; display: none;">AA</span>
@@ -490,7 +515,8 @@
                             </label>
                             <label class="partner-checkbox" title="JetBlue">
                                 <input type="checkbox" id="partner_jetblue">
-                                <img src="https://www.google.com/s2/favicons?domain=jetblue.com&sz=64" alt="JetBlue" class="partner-logo-img"
+                                <img src="https://www.google.com/s2/favicons?domain=jetblue.com&sz=64" alt="JetBlue"
+                                    class="partner-logo-img"
                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                                 <span class="partner-badge-fallback"
                                     style="background-color: #003876; display: none;">B6</span>
@@ -498,7 +524,8 @@
                             </label>
                             <label class="partner-checkbox" title="Alaska Airlines">
                                 <input type="checkbox" id="partner_alaska">
-                                <img src="https://www.google.com/s2/favicons?domain=alaskaair.com&sz=64" alt="Alaska" class="partner-logo-img"
+                                <img src="https://www.google.com/s2/favicons?domain=alaskaair.com&sz=64" alt="Alaska"
+                                    class="partner-logo-img"
                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                                 <span class="partner-badge-fallback"
                                     style="background-color: #01426A; display: none;">AS</span>
@@ -506,8 +533,8 @@
                             </label>
                             <label class="partner-checkbox" title="British Airways">
                                 <input type="checkbox" id="partner_british">
-                                <img src="https://www.google.com/s2/favicons?domain=britishairways.com&sz=64" alt="British Airways"
-                                    class="partner-logo-img"
+                                <img src="https://www.google.com/s2/favicons?domain=britishairways.com&sz=64"
+                                    alt="British Airways" class="partner-logo-img"
                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                                 <span class="partner-badge-fallback"
                                     style="background-color: #075AAA; display: none;">BA</span>
@@ -515,8 +542,8 @@
                             </label>
                             <label class="partner-checkbox" title="Air France/KLM">
                                 <input type="checkbox" id="partner_airfrance">
-                                <img src="https://www.google.com/s2/favicons?domain=airfrance.com&sz=64" alt="Air France"
-                                    class="partner-logo-img"
+                                <img src="https://www.google.com/s2/favicons?domain=airfrance.com&sz=64"
+                                    alt="Air France" class="partner-logo-img"
                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                                 <span class="partner-badge-fallback"
                                     style="background-color: #002157; display: none;">AF</span>
@@ -524,8 +551,8 @@
                             </label>
                             <label class="partner-checkbox" title="Singapore Airlines">
                                 <input type="checkbox" id="partner_singapore">
-                                <img src="https://www.google.com/s2/favicons?domain=singaporeair.com&sz=64" alt="Singapore"
-                                    class="partner-logo-img"
+                                <img src="https://www.google.com/s2/favicons?domain=singaporeair.com&sz=64"
+                                    alt="Singapore" class="partner-logo-img"
                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                                 <span class="partner-badge-fallback"
                                     style="background-color: #F0AB00; display: none;">SQ</span>
@@ -542,7 +569,8 @@
                             </label>
                             <label class="partner-checkbox" title="ANA">
                                 <input type="checkbox" id="partner_ana">
-                                <img src="https://www.google.com/s2/favicons?domain=ana.co.jp&sz=64" alt="ANA" class="partner-logo-img"
+                                <img src="https://www.google.com/s2/favicons?domain=ana.co.jp&sz=64" alt="ANA"
+                                    class="partner-logo-img"
                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                                 <span class="partner-badge-fallback"
                                     style="background-color: #13448F; display: none;">NH</span>
@@ -550,8 +578,8 @@
                             </label>
                             <label class="partner-checkbox" title="Cathay Pacific">
                                 <input type="checkbox" id="partner_cathay">
-                                <img src="https://www.google.com/s2/favicons?domain=cathaypacific.com&sz=64" alt="Cathay"
-                                    class="partner-logo-img"
+                                <img src="https://www.google.com/s2/favicons?domain=cathaypacific.com&sz=64"
+                                    alt="Cathay" class="partner-logo-img"
                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                                 <span class="partner-badge-fallback"
                                     style="background-color: #006564; display: none;">CX</span>
@@ -559,8 +587,8 @@
                             </label>
                             <label class="partner-checkbox" title="Virgin Atlantic">
                                 <input type="checkbox" id="partner_virgin">
-                                <img src="https://www.google.com/s2/favicons?domain=virginatlantic.com&sz=64" alt="Virgin"
-                                    class="partner-logo-img"
+                                <img src="https://www.google.com/s2/favicons?domain=virginatlantic.com&sz=64"
+                                    alt="Virgin" class="partner-logo-img"
                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                                 <span class="partner-badge-fallback"
                                     style="background-color: #E10A0A; display: none;">VS</span>
@@ -568,7 +596,8 @@
                             </label>
                             <label class="partner-checkbox" title="Qantas">
                                 <input type="checkbox" id="partner_qantas">
-                                <img src="https://www.google.com/s2/favicons?domain=qantas.com&sz=64" alt="Qantas" class="partner-logo-img"
+                                <img src="https://www.google.com/s2/favicons?domain=qantas.com&sz=64" alt="Qantas"
+                                    class="partner-logo-img"
                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                                 <span class="partner-badge-fallback"
                                     style="background-color: #E0002A; display: none;">QF</span>
@@ -591,7 +620,8 @@
                             </label>
                             <label class="partner-checkbox" title="Hilton Honors">
                                 <input type="checkbox" id="partner_hilton">
-                                <img src="https://www.google.com/s2/favicons?domain=hilton.com&sz=64" alt="Hilton" class="partner-logo-img"
+                                <img src="https://www.google.com/s2/favicons?domain=hilton.com&sz=64" alt="Hilton"
+                                    class="partner-logo-img"
                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                                 <span class="partner-badge-fallback"
                                     style="background-color: #104C97; display: none;">HH</span>
@@ -599,7 +629,8 @@
                             </label>
                             <label class="partner-checkbox" title="World of Hyatt">
                                 <input type="checkbox" id="partner_hyatt">
-                                <img src="https://www.google.com/s2/favicons?domain=hyatt.com&sz=64" alt="Hyatt" class="partner-logo-img"
+                                <img src="https://www.google.com/s2/favicons?domain=hyatt.com&sz=64" alt="Hyatt"
+                                    class="partner-logo-img"
                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                                 <span class="partner-badge-fallback"
                                     style="background-color: #8B734B; display: none;">WH</span>
@@ -607,7 +638,8 @@
                             </label>
                             <label class="partner-checkbox" title="IHG Rewards">
                                 <input type="checkbox" id="partner_ihg">
-                                <img src="https://www.google.com/s2/favicons?domain=ihg.com&sz=64" alt="IHG" class="partner-logo-img"
+                                <img src="https://www.google.com/s2/favicons?domain=ihg.com&sz=64" alt="IHG"
+                                    class="partner-logo-img"
                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                                 <span class="partner-badge-fallback"
                                     style="background-color: #1D4F91; display: none;">IHG</span>
@@ -624,8 +656,8 @@
                             </label>
                             <label class="partner-checkbox" title="Wyndham Rewards">
                                 <input type="checkbox" id="partner_wyndham">
-                                <img src="https://www.google.com/s2/favicons?domain=wyndhamhotels.com&sz=64" alt="Wyndham"
-                                    class="partner-logo-img"
+                                <img src="https://www.google.com/s2/favicons?domain=wyndhamhotels.com&sz=64"
+                                    alt="Wyndham" class="partner-logo-img"
                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                                 <span class="partner-badge-fallback"
                                     style="background-color: #00457C; display: none;">WR</span>
@@ -648,7 +680,7 @@
         <div class="modal modal-small">
             <div class="modal-header">
                 <h2 id="deleteModalTitle">Delete Item</h2>
-                <button class="modal-close" id="closeDeleteModal">&times;</button>
+                <button type="button" class="modal-close" id="closeDeleteModal">&times;</button>
             </div>
             <div class="modal-body">
                 <p>Are you sure you want to delete "<span id="deleteItemName"></span>"?</p>

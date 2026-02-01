@@ -1709,6 +1709,7 @@ const App = (function () {
     function init() {
         initElements();
         initEventListeners();
+        initThemeSwitcher();
 
         // Initialize Auth if available
         if (typeof Auth !== 'undefined') {
@@ -1734,6 +1735,26 @@ const App = (function () {
         setInterval(() => {
             renderRewards();
         }, 60 * 60 * 1000); // 1 hour
+    }
+
+    /**
+     * Initialize theme switcher
+     */
+    function initThemeSwitcher() {
+        const themeSelect = document.getElementById('themeSelect');
+        if (!themeSelect) return;
+
+        // Load saved theme or default to 'aurora'
+        const savedTheme = localStorage.getItem('cc-tracker-theme') || 'aurora';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        themeSelect.value = savedTheme;
+
+        // Listen for theme changes
+        themeSelect.addEventListener('change', (e) => {
+            const theme = e.target.value;
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('cc-tracker-theme', theme);
+        });
     }
 
     // Initialize when DOM is ready
