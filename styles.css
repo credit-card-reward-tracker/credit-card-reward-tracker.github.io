@@ -297,7 +297,7 @@ body {
     background: var(--bg-secondary);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-md);
-    overflow: hidden;
+    overflow: visible;
 }
 
 .rewards-table {
@@ -386,12 +386,82 @@ body {
     text-align: center;
 }
 
+/* ===== Card Filters ===== */
+.card-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: flex-end;
+    padding: 16px;
+    background-color: var(--bg-secondary);
+    border-radius: var(--border-radius-lg);
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.filter-group label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.filter-group select,
+.filter-group input {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--bg-secondary);
+    min-width: 150px;
+}
+
+.filter-group select:focus,
+.filter-group input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+}
+
+.card-filters .btn-text {
+    color: var(--text-muted);
+    padding: 8px 12px;
+}
+
+.card-filters .btn-text:hover {
+    color: var(--danger-color);
+}
+
+@media (max-width: 768px) {
+    .card-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-group {
+        width: 100%;
+    }
+
+    .filter-group select,
+    .filter-group input {
+        width: 100%;
+        min-width: unset;
+    }
+}
+
 /* ===== Cards Table ===== */
 .cards-container {
     background: var(--bg-secondary);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-md);
-    overflow: hidden;
+    overflow: visible;
 }
 
 .cards-table {
@@ -1127,4 +1197,415 @@ form {
 .badge-danger {
     background-color: var(--danger-bg);
     color: var(--danger-color);
+}
+
+/* ===== Cashback Category Section ===== */
+.cashback-section {
+    border-top: 1px solid var(--border-color);
+    padding-top: 16px;
+    margin-top: 8px;
+}
+
+.cashback-section>label {
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.cashback-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.cashback-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cashback-label {
+    flex: 1;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.cashback-item input {
+    width: 70px;
+    padding: 8px;
+    font-size: 0.9rem;
+    text-align: right;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+}
+
+.cashback-item input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+}
+
+/* ===== Best Card Page ===== */
+.category-filter {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.category-filter label {
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.category-filter select {
+    padding: 10px 16px;
+    font-size: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--bg-secondary);
+    min-width: 200px;
+}
+
+.category-filter select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.bestcard-container {
+    margin-top: 20px;
+}
+
+.bestcard-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.bestcard-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    transition: var(--transition);
+}
+
+.bestcard-item:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.bestcard-item.best {
+    border-color: var(--warning-color);
+    background-color: var(--warning-bg);
+}
+
+.bestcard-rank {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-primary);
+    border-radius: 50%;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.bestcard-item.best .bestcard-rank {
+    background-color: var(--warning-color);
+    color: white;
+}
+
+.bestcard-info {
+    flex: 1;
+}
+
+.bestcard-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.best-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--warning-color);
+    background-color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.bestcard-issuer {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-top: 2px;
+}
+
+.bestcard-cashback {
+    text-align: right;
+}
+
+.cashback-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--success-color);
+}
+
+.cashback-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.no-results {
+    text-align: center;
+    padding: 60px 20px;
+    background-color: var(--bg-secondary);
+    border-radius: var(--border-radius-lg);
+    border: 1px dashed var(--border-color);
+}
+
+.no-results-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+}
+
+.no-results h3 {
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.no-results p {
+    color: var(--text-secondary);
+}
+
+/* ===== Transfer Partners Section ===== */
+.transfer-partners-section {
+    border-top: 1px solid var(--border-color);
+    padding-top: 16px;
+    margin-top: 8px;
+}
+
+.transfer-partners-section>label {
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.section-hint {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.partners-category {
+    margin-bottom: 16px;
+}
+
+.partners-category h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.partners-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.partner-checkbox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 6px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    background-color: var(--bg-secondary);
+}
+
+.partner-checkbox:hover {
+    border-color: var(--primary-color);
+    background-color: var(--bg-hover);
+}
+
+.partner-checkbox input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.partner-checkbox:has(input:checked) {
+    border-color: var(--primary-color);
+    background-color: rgba(79, 70, 229, 0.1);
+}
+
+.partner-logo {
+    font-size: 1.5rem;
+    margin-bottom: 4px;
+}
+
+.partner-name {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.partner-checkbox:has(input:checked) .partner-name {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+/* Best Card - Partner chips */
+.bestcard-partners {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+}
+
+.partner-chip {
+    font-size: 0.9rem;
+    padding: 2px 4px;
+    background-color: var(--bg-primary);
+    border-radius: 4px;
+    position: relative;
+}
+
+/* Custom tooltip for partner chips */
+.partner-chip::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--text-primary);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+    pointer-events: none;
+    z-index: 9999;
+    margin-bottom: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.partner-chip:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Best Card - 0% cashback styling */
+.bestcard-item.no-cashback {
+    opacity: 0.6;
+}
+
+.cashback-value.zero {
+    color: var(--text-muted);
+}
+
+/* ===== Card List - Partners & Cashback Display ===== */
+.card-partners {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+}
+
+.card-cashback-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+}
+
+.cashback-chip {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    background-color: var(--success-bg);
+    color: var(--success-color);
+    border-radius: 10px;
+    font-weight: 500;
+    position: relative;
+}
+
+.cashback-chip.more {
+    background-color: var(--bg-primary);
+    color: var(--text-secondary);
+    cursor: default;
+}
+
+/* Tooltip for "more" cashback chip */
+.cashback-chip.more::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--text-primary);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+    pointer-events: none;
+    z-index: 9999;
+    margin-bottom: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.cashback-chip.more:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Mobile styles for cashback grid */
+@media (max-width: 480px) {
+    .cashback-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .partners-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .bestcard-item {
+        flex-wrap: wrap;
+    }
+
+    .bestcard-cashback {
+        width: 100%;
+        text-align: left;
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .bestcard-item.best .bestcard-cashback {
+        border-top-color: rgba(0, 0, 0, 0.1);
+    }
 }

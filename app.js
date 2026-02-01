@@ -45,6 +45,13 @@ const App = (function () {
             cardCount: document.getElementById('totalCards'),
             totalFees: document.getElementById('totalAnnualFees'),
 
+            // Card Filters
+            filterIssuer: document.getElementById('filterIssuer'),
+            filterPartner: document.getElementById('filterPartner'),
+            filterDateFrom: document.getElementById('filterDateFrom'),
+            filterDateTo: document.getElementById('filterDateTo'),
+            clearFiltersBtn: document.getElementById('clearFiltersBtn'),
+
             // Auth UI
             signInBtn: document.getElementById('signInBtn'),
             signOutBtn: document.getElementById('signOutBtn'),
@@ -94,7 +101,12 @@ const App = (function () {
             formCardIssuer: document.getElementById('cardIssuer'),
             formCardOpenDate: document.getElementById('cardOpenDate'),
             formCardAnnualFee: document.getElementById('cardAnnualFee'),
-            formCardNotes: document.getElementById('cardNotes')
+            formCardNotes: document.getElementById('cardNotes'),
+
+            // Best Card Page
+            categorySelect: document.getElementById('categorySelect'),
+            bestCardResults: document.getElementById('bestCardResults'),
+            emptyBestCardState: document.getElementById('emptyBestCardState')
         };
     }
 
@@ -152,6 +164,28 @@ const App = (function () {
         // Add card button from reward modal
         if (elements.addCardFromRewardBtn) {
             elements.addCardFromRewardBtn.addEventListener('click', handleAddCardFromReward);
+        }
+
+        // Category select for Best Card page
+        if (elements.categorySelect) {
+            elements.categorySelect.addEventListener('change', renderBestCardRecommendations);
+        }
+
+        // Card filter listeners
+        if (elements.filterIssuer) {
+            elements.filterIssuer.addEventListener('change', renderCards);
+        }
+        if (elements.filterPartner) {
+            elements.filterPartner.addEventListener('change', renderCards);
+        }
+        if (elements.filterDateFrom) {
+            elements.filterDateFrom.addEventListener('change', renderCards);
+        }
+        if (elements.filterDateTo) {
+            elements.filterDateTo.addEventListener('change', renderCards);
+        }
+        if (elements.clearFiltersBtn) {
+            elements.clearFiltersBtn.addEventListener('click', clearCardFilters);
         }
 
         // Delete confirmation (unified for rewards and cards)
@@ -362,6 +396,172 @@ const App = (function () {
         return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
+    // =====================
+    // Cashback Category Helpers
+    // =====================
+
+    const CASHBACK_CATEGORIES = ['dining', 'groceries', 'travel', 'gas', 'shopping', 'entertainment', 'utilities', 'other'];
+
+    // =====================
+    // Transfer Partners
+    // =====================
+
+    const TRANSFER_PARTNERS = {
+        // Airlines
+        'united': { name: 'United Airlines', logo: '✈️', type: 'airline' },
+        'delta': { name: 'Delta Air Lines', logo: '🔺', type: 'airline' },
+        'american': { name: 'American Airlines', logo: '🦅', type: 'airline' },
+        'southwest': { name: 'Southwest Airlines', logo: '❤️', type: 'airline' },
+        'jetblue': { name: 'JetBlue', logo: '🔵', type: 'airline' },
+        'alaska': { name: 'Alaska Airlines', logo: '🏔️', type: 'airline' },
+        'british': { name: 'British Airways', logo: '🇬🇧', type: 'airline' },
+        'airfrance': { name: 'Air France/KLM', logo: '🇫🇷', type: 'airline' },
+        'singapore': { name: 'Singapore Airlines', logo: '🇸🇬', type: 'airline' },
+        'emirates': { name: 'Emirates', logo: '🇦🇪', type: 'airline' },
+        'ana': { name: 'ANA', logo: '🇯🇵', type: 'airline' },
+        'cathay': { name: 'Cathay Pacific', logo: '🐉', type: 'airline' },
+        'virgin': { name: 'Virgin Atlantic', logo: '💜', type: 'airline' },
+        'qantas': { name: 'Qantas', logo: '🦘', type: 'airline' },
+        // Hotels
+        'marriott': { name: 'Marriott Bonvoy', logo: '🏨', type: 'hotel' },
+        'hilton': { name: 'Hilton Honors', logo: '🛏️', type: 'hotel' },
+        'hyatt': { name: 'World of Hyatt', logo: '🌍', type: 'hotel' },
+        'ihg': { name: 'IHG Rewards', logo: '🏢', type: 'hotel' },
+        'choice': { name: 'Choice Privileges', logo: '🔑', type: 'hotel' },
+        'wyndham': { name: 'Wyndham Rewards', logo: '🌟', type: 'hotel' }
+    };
+
+    /**
+     * Get selected transfer partners from checkboxes
+     */
+    function getTransferPartnersFromFields() {
+        const partners = [];
+        Object.keys(TRANSFER_PARTNERS).forEach(key => {
+            const checkbox = document.getElementById(`partner_${key}`);
+            if (checkbox && checkbox.checked) {
+                partners.push(key);
+            }
+        });
+        return partners;
+    }
+
+    /**
+     * Populate transfer partner checkboxes
+     */
+    function populateTransferPartnerFields(transferPartners = []) {
+        Object.keys(TRANSFER_PARTNERS).forEach(key => {
+            const checkbox = document.getElementById(`partner_${key}`);
+            if (checkbox) {
+                checkbox.checked = transferPartners.includes(key);
+            }
+        });
+    }
+
+    /**
+     * Clear all transfer partner checkboxes
+     */
+    function clearTransferPartnerFields() {
+        Object.keys(TRANSFER_PARTNERS).forEach(key => {
+            const checkbox = document.getElementById(`partner_${key}`);
+            if (checkbox) {
+                checkbox.checked = false;
+            }
+        });
+    }
+
+    /**
+     * Get transfer partner display info
+     */
+    function getPartnerInfo(partnerKey) {
+        const partner = TRANSFER_PARTNERS[partnerKey];
+        return {
+            name: partner ? partner.name : partnerKey,
+            logo: partner ? partner.logo : '🔄'
+        };
+    }
+
+    /**
+     * Generate HTML for transfer partners display
+     */
+    function renderTransferPartnersHtml(transferPartners) {
+        if (!transferPartners || transferPartners.length === 0) return '';
+
+        return `<div class="card-partners">
+            ${transferPartners.map(p => {
+            const info = getPartnerInfo(p);
+            return `<span class="partner-chip" title="${escapeHtml(info.name)}">${info.logo}</span>`;
+        }).join('')}
+        </div>`;
+    }
+
+    /**
+     * Generate HTML for cashback categories display
+     */
+    function renderCashbackHtml(cashbackByCategory, maxVisible = 3) {
+        if (!cashbackByCategory) return '';
+
+        const entries = Object.entries(cashbackByCategory).filter(([, val]) => val > 0);
+        if (entries.length === 0) return '';
+
+        const visibleEntries = entries.slice(0, maxVisible);
+        const hiddenEntries = entries.slice(maxVisible);
+
+        let html = '<div class="card-cashback-chips">';
+
+        visibleEntries.forEach(([category, percent]) => {
+            html += `<span class="cashback-chip" title="${capitalizeFirst(category)}">${percent}% ${capitalizeFirst(category)}</span>`;
+        });
+
+        if (hiddenEntries.length > 0) {
+            const hiddenText = hiddenEntries.map(([cat, pct]) => `${pct}% ${capitalizeFirst(cat)}`).join(', ');
+            html += `<span class="cashback-chip more" title="${hiddenText}">+${hiddenEntries.length} more</span>`;
+        }
+
+        html += '</div>';
+        return html;
+    }
+
+    /**
+     * Get cashback values from form fields
+     */
+    function getCashbackFromFields() {
+        const cashback = {};
+        CASHBACK_CATEGORIES.forEach(category => {
+            const input = document.getElementById(`cashback_${category}`);
+            if (input) {
+                const value = parseFloat(input.value) || 0;
+                if (value > 0) {
+                    cashback[category] = value;
+                }
+            }
+        });
+        return cashback;
+    }
+
+    /**
+     * Populate cashback form fields with values
+     */
+    function populateCashbackFields(cashbackByCategory) {
+        CASHBACK_CATEGORIES.forEach(category => {
+            const input = document.getElementById(`cashback_${category}`);
+            if (input) {
+                input.value = cashbackByCategory[category] || '';
+            }
+        });
+    }
+
+    /**
+     * Clear all cashback form fields
+     */
+    function clearCashbackFields() {
+        CASHBACK_CATEGORIES.forEach(category => {
+            const input = document.getElementById(`cashback_${category}`);
+            if (input) {
+                input.value = '';
+            }
+        });
+    }
+
     /**
      * Populate the card dropdown with available cards from storage
      */
@@ -475,6 +675,8 @@ const App = (function () {
         elements.cardModalTitle.textContent = 'Add Card';
         elements.cardForm.reset();
         elements.formCardId.value = '';
+        clearCashbackFields();
+        clearTransferPartnerFields();
         elements.cardModal.classList.add('active');
         elements.formCardName.focus();
     }
@@ -497,6 +699,12 @@ const App = (function () {
         elements.formCardOpenDate.value = card.openDate || '';
         elements.formCardAnnualFee.value = card.annualFee || '';
         elements.formCardNotes.value = card.notes || '';
+
+        // Populate cashback categories
+        populateCashbackFields(card.cashbackByCategory || {});
+
+        // Populate transfer partners
+        populateTransferPartnerFields(card.transferPartners || []);
 
         elements.cardModal.classList.add('active');
         elements.formCardName.focus();
@@ -540,7 +748,9 @@ const App = (function () {
             issuer: elements.formCardIssuer.value.trim(),
             openDate: elements.formCardOpenDate.value,
             annualFee: parseFloat(elements.formCardAnnualFee.value) || 0,
-            notes: elements.formCardNotes.value.trim()
+            notes: elements.formCardNotes.value.trim(),
+            cashbackByCategory: getCashbackFromFields(),
+            transferPartners: getTransferPartnersFromFields()
         };
 
         if (id) {
@@ -856,13 +1066,19 @@ const App = (function () {
      * Render all cards
      */
     function renderCards() {
-        const cards = Storage.getCards();
+        const allCards = Storage.getCards();
 
-        // Update card stats
-        updateCardStats(cards);
+        // Populate filter dropdowns
+        populateCardFilterDropdowns(allCards);
+
+        // Apply filters
+        const cards = applyCardFilters(allCards);
+
+        // Update card stats (show stats for all cards, not filtered)
+        updateCardStats(allCards);
 
         // Show/hide empty state
-        if (cards.length === 0) {
+        if (allCards.length === 0) {
             if (elements.cardsTable) elements.cardsTable.classList.add('hidden');
             if (elements.emptyCardsState) elements.emptyCardsState.classList.add('visible');
             return;
@@ -879,12 +1095,16 @@ const App = (function () {
             elements.cardsBody.innerHTML = sortedCards.map(card => {
                 const feeDisplay = card.annualFee ? `$${card.annualFee.toFixed(2)}` : '$0.00';
                 const openDateDisplay = card.openDate ? formatDisplayDate(card.openDate) : '-';
+                const partnersHtml = renderTransferPartnersHtml(card.transferPartners);
+                const cashbackHtml = renderCashbackHtml(card.cashbackByCategory, 2);
 
                 return `
                     <tr data-id="${card.id}">
                         <td class="col-name">
                             <div class="card-name-main">${escapeHtml(card.name)}</div>
                             ${card.issuer ? `<div class="card-issuer">${escapeHtml(card.issuer)}</div>` : ''}
+                            ${partnersHtml}
+                            ${cashbackHtml}
                         </td>
                         <td class="col-issuer">
                             <span>${escapeHtml(card.issuer) || '-'}</span>
@@ -922,6 +1142,8 @@ const App = (function () {
             elements.cardsCards.innerHTML = sortedCards.map(card => {
                 const feeDisplay = card.annualFee ? `$${card.annualFee.toFixed(2)}` : '$0.00';
                 const openDateDisplay = card.openDate ? formatDisplayDate(card.openDate) : '-';
+                const partnersHtml = renderTransferPartnersHtml(card.transferPartners);
+                const cashbackHtml = renderCashbackHtml(card.cashbackByCategory, 3);
 
                 return `
                     <div class="card-card-item" data-id="${card.id}">
@@ -945,6 +1167,8 @@ const App = (function () {
                                 >🗑️</button>
                             </div>
                         </div>
+                        ${partnersHtml}
+                        ${cashbackHtml}
                         <div class="card-details">
                             <div class="card-detail">
                                 <div class="card-detail-label">Opened</div>
@@ -971,6 +1195,183 @@ const App = (function () {
 
         if (elements.cardCount) elements.cardCount.textContent = cardCount;
         if (elements.totalFees) elements.totalFees.textContent = `$${totalFees.toFixed(2)}`;
+    }
+
+    /**
+     * Populate card filter dropdowns with unique values
+     */
+    function populateCardFilterDropdowns(cards) {
+        // Populate issuer dropdown
+        if (elements.filterIssuer) {
+            const currentIssuer = elements.filterIssuer.value;
+            const issuers = [...new Set(cards.map(c => c.issuer).filter(Boolean))].sort();
+
+            elements.filterIssuer.innerHTML = '<option value="">All Issuers</option>';
+            issuers.forEach(issuer => {
+                const option = document.createElement('option');
+                option.value = issuer;
+                option.textContent = issuer;
+                if (issuer === currentIssuer) option.selected = true;
+                elements.filterIssuer.appendChild(option);
+            });
+        }
+
+        // Populate transfer partner dropdown
+        if (elements.filterPartner) {
+            const currentPartner = elements.filterPartner.value;
+            const allPartners = new Set();
+            cards.forEach(card => {
+                if (card.transferPartners) {
+                    card.transferPartners.forEach(p => allPartners.add(p));
+                }
+            });
+            const partners = [...allPartners].sort();
+
+            elements.filterPartner.innerHTML = '<option value="">All Partners</option>';
+            partners.forEach(partner => {
+                const info = getPartnerInfo(partner);
+                const option = document.createElement('option');
+                option.value = partner;
+                option.textContent = `${info.logo} ${info.name}`;
+                if (partner === currentPartner) option.selected = true;
+                elements.filterPartner.appendChild(option);
+            });
+        }
+    }
+
+    /**
+     * Apply card filters
+     */
+    function applyCardFilters(cards) {
+        const issuerFilter = elements.filterIssuer ? elements.filterIssuer.value : '';
+        const partnerFilter = elements.filterPartner ? elements.filterPartner.value : '';
+        const dateFromFilter = elements.filterDateFrom ? elements.filterDateFrom.value : '';
+        const dateToFilter = elements.filterDateTo ? elements.filterDateTo.value : '';
+
+        return cards.filter(card => {
+            // Filter by issuer
+            if (issuerFilter && card.issuer !== issuerFilter) {
+                return false;
+            }
+
+            // Filter by transfer partner
+            if (partnerFilter) {
+                if (!card.transferPartners || !card.transferPartners.includes(partnerFilter)) {
+                    return false;
+                }
+            }
+
+            // Filter by open date (from)
+            if (dateFromFilter && card.openDate) {
+                if (card.openDate < dateFromFilter) {
+                    return false;
+                }
+            }
+
+            // Filter by open date (to)
+            if (dateToFilter && card.openDate) {
+                if (card.openDate > dateToFilter) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+    }
+
+    /**
+     * Clear all card filters
+     */
+    function clearCardFilters() {
+        if (elements.filterIssuer) elements.filterIssuer.value = '';
+        if (elements.filterPartner) elements.filterPartner.value = '';
+        if (elements.filterDateFrom) elements.filterDateFrom.value = '';
+        if (elements.filterDateTo) elements.filterDateTo.value = '';
+        renderCards();
+    }
+
+    // =====================
+    // Best Card Page Functions
+    // =====================
+
+    /**
+     * Render Best Card recommendations based on selected category
+     */
+    function renderBestCardRecommendations() {
+        const category = elements.categorySelect ? elements.categorySelect.value : '';
+
+        if (!category) {
+            // Show empty state
+            if (elements.bestCardResults) elements.bestCardResults.innerHTML = '';
+            if (elements.emptyBestCardState) elements.emptyBestCardState.style.display = 'block';
+            return;
+        }
+
+        const cards = Storage.getCards();
+
+        if (cards.length === 0) {
+            if (elements.bestCardResults) {
+                elements.bestCardResults.innerHTML = `
+                    <div class="no-results">
+                        <div class="no-results-icon">💳</div>
+                        <h3>No cards added yet</h3>
+                        <p>Add cards in the Cards tab to see recommendations.</p>
+                    </div>
+                `;
+            }
+            if (elements.emptyBestCardState) elements.emptyBestCardState.style.display = 'none';
+            return;
+        }
+
+        // Map all cards with cashback for selected category and sort highest to lowest
+        const cardsWithCashback = cards
+            .map(card => ({
+                ...card,
+                cashback: (card.cashbackByCategory && card.cashbackByCategory[category]) || 0
+            }))
+            .sort((a, b) => b.cashback - a.cashback);
+
+        // Hide empty state
+        if (elements.emptyBestCardState) elements.emptyBestCardState.style.display = 'none';
+
+        // Find the best cashback value (could be 0 if no cards have cashback for this category)
+        const bestCashback = cardsWithCashback[0].cashback;
+
+        if (elements.bestCardResults) {
+            elements.bestCardResults.innerHTML = `
+                <div class="bestcard-list">
+                    ${cardsWithCashback.map((card, index) => {
+                const isBest = bestCashback > 0 && card.cashback === bestCashback;
+                const hasNoCashback = card.cashback === 0;
+                const partnersHtml = card.transferPartners && card.transferPartners.length > 0
+                    ? `<div class="bestcard-partners">
+                        ${card.transferPartners.map(p => {
+                        const info = getPartnerInfo(p);
+                        return `<span class="partner-chip" title="${escapeHtml(info.name)}">${info.logo}</span>`;
+                    }).join('')}
+                       </div>`
+                    : '';
+                return `
+                            <div class="bestcard-item ${isBest ? 'best' : ''} ${hasNoCashback ? 'no-cashback' : ''}">
+                                <div class="bestcard-rank">${index + 1}</div>
+                                <div class="bestcard-info">
+                                    <div class="bestcard-name">
+                                        ${escapeHtml(card.name)}
+                                        ${isBest ? '<span class="best-badge">⭐ Best</span>' : ''}
+                                    </div>
+                                    ${card.issuer ? `<div class="bestcard-issuer">${escapeHtml(card.issuer)}</div>` : ''}
+                                    ${partnersHtml}
+                                </div>
+                                <div class="bestcard-cashback">
+                                    <span class="cashback-value ${hasNoCashback ? 'zero' : ''}">${card.cashback}%</span>
+                                    <span class="cashback-label">${capitalizeFirst(category)}</span>
+                                </div>
+                            </div>
+                        `;
+            }).join('')}
+                </div>
+            `;
+        }
     }
 
     /**

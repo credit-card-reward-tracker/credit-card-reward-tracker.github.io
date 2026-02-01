@@ -66,6 +66,10 @@
                 <span class="nav-icon">💳</span>
                 <span class="nav-label">Cards</span>
             </button>
+            <button class="nav-tab" data-page="bestcard" id="tabBestCard">
+                <span class="nav-icon">⭐</span>
+                <span class="nav-label">Best Card</span>
+            </button>
         </nav>
 
         <main class="main-content">
@@ -135,6 +139,31 @@
                     </div>
                 </div>
 
+                <!-- Card Filters -->
+                <div class="card-filters" id="cardFilters">
+                    <div class="filter-group">
+                        <label for="filterIssuer">Issuer</label>
+                        <select id="filterIssuer">
+                            <option value="">All Issuers</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterPartner">Transfer Partner</label>
+                        <select id="filterPartner">
+                            <option value="">All Partners</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterDateFrom">Opened After</label>
+                        <input type="date" id="filterDateFrom">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterDateTo">Opened Before</label>
+                        <input type="date" id="filterDateTo">
+                    </div>
+                    <button class="btn btn-text btn-small" id="clearFiltersBtn">Clear Filters</button>
+                </div>
+
                 <div class="cards-container">
                     <table class="cards-table" id="cardsTable">
                         <thead>
@@ -159,6 +188,35 @@
                         <div class="empty-icon">💳</div>
                         <h3>No cards yet</h3>
                         <p>Add your first credit card to track annual fees!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== BEST CARD PAGE ==================== -->
+            <div class="page" id="pageBestcard">
+                <div class="controls">
+                    <div class="category-filter">
+                        <label for="categorySelect">Spending Category:</label>
+                        <select id="categorySelect">
+                            <option value="">-- Select a category --</option>
+                            <option value="dining">Dining</option>
+                            <option value="groceries">Groceries</option>
+                            <option value="travel">Travel</option>
+                            <option value="gas">Gas</option>
+                            <option value="shopping">Shopping</option>
+                            <option value="entertainment">Entertainment</option>
+                            <option value="utilities">Utilities</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="bestcard-container">
+                    <div class="bestcard-results" id="bestCardResults"></div>
+                    <div class="empty-state" id="emptyBestCardState">
+                        <div class="empty-icon">⭐</div>
+                        <h3>Select a category</h3>
+                        <p>Choose a spending category to see which card gives you the best cashback.</p>
                     </div>
                 </div>
             </div>
@@ -266,6 +324,165 @@
                     <label for="cardNotes">Notes</label>
                     <textarea id="cardNotes" rows="2" placeholder="Optional notes"></textarea>
                 </div>
+
+                <!-- Cashback by Category Section -->
+                <div class="form-group cashback-section">
+                    <label>Cashback by Category (%)</label>
+                    <div class="cashback-grid" id="cashbackGrid">
+                        <div class="cashback-item">
+                            <span class="cashback-label">Dining</span>
+                            <input type="number" id="cashback_dining" min="0" max="100" step="0.1" placeholder="0">
+                        </div>
+                        <div class="cashback-item">
+                            <span class="cashback-label">Groceries</span>
+                            <input type="number" id="cashback_groceries" min="0" max="100" step="0.1" placeholder="0">
+                        </div>
+                        <div class="cashback-item">
+                            <span class="cashback-label">Travel</span>
+                            <input type="number" id="cashback_travel" min="0" max="100" step="0.1" placeholder="0">
+                        </div>
+                        <div class="cashback-item">
+                            <span class="cashback-label">Gas</span>
+                            <input type="number" id="cashback_gas" min="0" max="100" step="0.1" placeholder="0">
+                        </div>
+                        <div class="cashback-item">
+                            <span class="cashback-label">Shopping</span>
+                            <input type="number" id="cashback_shopping" min="0" max="100" step="0.1" placeholder="0">
+                        </div>
+                        <div class="cashback-item">
+                            <span class="cashback-label">Entertainment</span>
+                            <input type="number" id="cashback_entertainment" min="0" max="100" step="0.1"
+                                placeholder="0">
+                        </div>
+                        <div class="cashback-item">
+                            <span class="cashback-label">Utilities</span>
+                            <input type="number" id="cashback_utilities" min="0" max="100" step="0.1" placeholder="0">
+                        </div>
+                        <div class="cashback-item">
+                            <span class="cashback-label">Other</span>
+                            <input type="number" id="cashback_other" min="0" max="100" step="0.1" placeholder="0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transfer Partners Section -->
+                <div class="form-group transfer-partners-section">
+                    <label>Transfer Partners</label>
+                    <p class="section-hint">Select airline and hotel partners your points transfer to</p>
+
+                    <div class="partners-category">
+                        <h4>Airlines</h4>
+                        <div class="partners-grid" id="airlinePartnersGrid">
+                            <label class="partner-checkbox" title="United Airlines">
+                                <input type="checkbox" id="partner_united">
+                                <span class="partner-logo">✈️</span>
+                                <span class="partner-name">United</span>
+                            </label>
+                            <label class="partner-checkbox" title="Delta Air Lines">
+                                <input type="checkbox" id="partner_delta">
+                                <span class="partner-logo">🔺</span>
+                                <span class="partner-name">Delta</span>
+                            </label>
+                            <label class="partner-checkbox" title="American Airlines">
+                                <input type="checkbox" id="partner_american">
+                                <span class="partner-logo">🦅</span>
+                                <span class="partner-name">American</span>
+                            </label>
+                            <label class="partner-checkbox" title="Southwest Airlines">
+                                <input type="checkbox" id="partner_southwest">
+                                <span class="partner-logo">❤️</span>
+                                <span class="partner-name">Southwest</span>
+                            </label>
+                            <label class="partner-checkbox" title="JetBlue">
+                                <input type="checkbox" id="partner_jetblue">
+                                <span class="partner-logo">🔵</span>
+                                <span class="partner-name">JetBlue</span>
+                            </label>
+                            <label class="partner-checkbox" title="Alaska Airlines">
+                                <input type="checkbox" id="partner_alaska">
+                                <span class="partner-logo">🏔️</span>
+                                <span class="partner-name">Alaska</span>
+                            </label>
+                            <label class="partner-checkbox" title="British Airways">
+                                <input type="checkbox" id="partner_british">
+                                <span class="partner-logo">🇬🇧</span>
+                                <span class="partner-name">British</span>
+                            </label>
+                            <label class="partner-checkbox" title="Air France/KLM">
+                                <input type="checkbox" id="partner_airfrance">
+                                <span class="partner-logo">🇫🇷</span>
+                                <span class="partner-name">Air France</span>
+                            </label>
+                            <label class="partner-checkbox" title="Singapore Airlines">
+                                <input type="checkbox" id="partner_singapore">
+                                <span class="partner-logo">🇸🇬</span>
+                                <span class="partner-name">Singapore</span>
+                            </label>
+                            <label class="partner-checkbox" title="Emirates">
+                                <input type="checkbox" id="partner_emirates">
+                                <span class="partner-logo">🇦🇪</span>
+                                <span class="partner-name">Emirates</span>
+                            </label>
+                            <label class="partner-checkbox" title="ANA">
+                                <input type="checkbox" id="partner_ana">
+                                <span class="partner-logo">🇯🇵</span>
+                                <span class="partner-name">ANA</span>
+                            </label>
+                            <label class="partner-checkbox" title="Cathay Pacific">
+                                <input type="checkbox" id="partner_cathay">
+                                <span class="partner-logo">🐉</span>
+                                <span class="partner-name">Cathay</span>
+                            </label>
+                            <label class="partner-checkbox" title="Virgin Atlantic">
+                                <input type="checkbox" id="partner_virgin">
+                                <span class="partner-logo">💜</span>
+                                <span class="partner-name">Virgin</span>
+                            </label>
+                            <label class="partner-checkbox" title="Qantas">
+                                <input type="checkbox" id="partner_qantas">
+                                <span class="partner-logo">🦘</span>
+                                <span class="partner-name">Qantas</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="partners-category">
+                        <h4>Hotels</h4>
+                        <div class="partners-grid" id="hotelPartnersGrid">
+                            <label class="partner-checkbox" title="Marriott Bonvoy">
+                                <input type="checkbox" id="partner_marriott">
+                                <span class="partner-logo">🏨</span>
+                                <span class="partner-name">Marriott</span>
+                            </label>
+                            <label class="partner-checkbox" title="Hilton Honors">
+                                <input type="checkbox" id="partner_hilton">
+                                <span class="partner-logo">🛏️</span>
+                                <span class="partner-name">Hilton</span>
+                            </label>
+                            <label class="partner-checkbox" title="World of Hyatt">
+                                <input type="checkbox" id="partner_hyatt">
+                                <span class="partner-logo">🌍</span>
+                                <span class="partner-name">Hyatt</span>
+                            </label>
+                            <label class="partner-checkbox" title="IHG Rewards">
+                                <input type="checkbox" id="partner_ihg">
+                                <span class="partner-logo">🏢</span>
+                                <span class="partner-name">IHG</span>
+                            </label>
+                            <label class="partner-checkbox" title="Choice Privileges">
+                                <input type="checkbox" id="partner_choice">
+                                <span class="partner-logo">🔑</span>
+                                <span class="partner-name">Choice</span>
+                            </label>
+                            <label class="partner-checkbox" title="Wyndham Rewards">
+                                <input type="checkbox" id="partner_wyndham">
+                                <span class="partner-logo">🌟</span>
+                                <span class="partner-name">Wyndham</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" id="cancelCardBtn">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save Card</button>
