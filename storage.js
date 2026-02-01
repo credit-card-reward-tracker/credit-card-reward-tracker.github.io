@@ -23,8 +23,11 @@ const Storage = (function () {
      * @returns {Object} User data object with rewards array
      */
     function getUserData() {
+        console.log('fetching user data from storage');
         try {
             const data = localStorage.getItem(STORAGE_KEY);
+            console.log('storage key:', STORAGE_KEY);
+            console.log('fetched user data:', data);
             if (data) {
                 return JSON.parse(data);
             }
@@ -186,6 +189,7 @@ const Storage = (function () {
      * @returns {Array} Array of card objects
      */
     function getCards() {
+        console.log('fetching cards from storage');
         const userData = getUserData();
         return userData.cards || [];
     }

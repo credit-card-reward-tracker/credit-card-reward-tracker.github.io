@@ -65,7 +65,8 @@ const App = (function () {
             // Reward Form fields
             rewardId: document.getElementById('rewardId'),
             rewardName: document.getElementById('rewardName'),
-            cardName: document.getElementById('cardName'),
+            rewardCardSelect: document.getElementById('rewardCardSelect'),
+            addCardFromRewardBtn: document.getElementById('addCardFromRewardBtn'),
             amount: document.getElementById('amount'),
             recurrenceType: document.getElementById('recurrenceType'),
             customRecurrence: document.getElementById('customRecurrence'),
@@ -147,6 +148,11 @@ const App = (function () {
 
         // Recurrence type change
         elements.recurrenceType.addEventListener('change', handleRecurrenceTypeChange);
+
+        // Add card button from reward modal
+        if (elements.addCardFromRewardBtn) {
+            elements.addCardFromRewardBtn.addEventListener('click', handleAddCardFromReward);
+        }
 
         // Delete confirmation (unified for rewards and cards)
         elements.confirmDeleteBtn.addEventListener('click', handleDeleteConfirm);
@@ -357,6 +363,29 @@ const App = (function () {
     }
 
     /**
+     * Populate the card dropdown with available cards from storage
+     */
+    function populateCardDropdown(selectedCardName = '') {
+        const cards = Storage.getCards();
+        const select = elements.rewardCardSelect;
+        if (!select) return;
+
+        // Clear existing options and add default
+        select.innerHTML = '<option value="">-- Select a card --</option>';
+
+        // Add card options from storage
+        cards.forEach(card => {
+            const option = document.createElement('option');
+            option.value = card.name;
+            option.textContent = card.name;
+            if (card.name === selectedCardName) {
+                option.selected = true;
+            }
+            select.appendChild(option);
+        });
+    }
+
+    /**
      * Open the add reward modal
      */
     function openAddModal() {
@@ -364,6 +393,7 @@ const App = (function () {
         elements.rewardForm.reset();
         elements.rewardId.value = '';
         elements.customRecurrence.style.display = 'none';
+        populateCardDropdown();
         elements.rewardModal.classList.add('active');
         elements.rewardName.focus();
     }
@@ -382,7 +412,7 @@ const App = (function () {
         elements.modalTitle.textContent = 'Edit Reward';
         elements.rewardId.value = reward.id;
         elements.rewardName.value = reward.title;
-        elements.cardName.value = reward.cardName || '';
+        populateCardDropdown(reward.cardName || '');
         elements.amount.value = reward.amount || '';
         elements.description.value = reward.description || '';
         elements.recurrenceType.value = reward.recurrence.type;
@@ -535,6 +565,16 @@ const App = (function () {
     }
 
     /**
+     * Handle add card button click from reward modal
+     * Opens Add Card modal
+     */
+    function handleAddCardFromReward() {
+        // Close reward modal and open card modal
+        closeRewardModal();
+        openAddCardModal();
+    }
+
+    /**
      * Handle form submission
      * @param {Event} e - Form submit event
      */
@@ -543,7 +583,7 @@ const App = (function () {
 
         const id = elements.rewardId.value;
         const title = elements.rewardName.value.trim();
-        const cardName = elements.cardName.value.trim();
+        const cardName = elements.rewardCardSelect ? elements.rewardCardSelect.value.trim() : '';
         const amount = parseFloat(elements.amount.value) || 0;
         const description = elements.description.value.trim();
         const recurrenceType = elements.recurrenceType.value;
@@ -1073,10 +1113,7 @@ const App = (function () {
             const localRewards = Storage.getRewards();
             const localCards = Storage.getCards();
             if (localRewards.length > 0 || localCards.length > 0) {
-                const migrated = await Auth.migrateLocalToCloud(localRewards, localCards);
-                if (migrated) {
-                    console.log('Local data migrated to cloud');
-                }
+                await Auth.migrateLocalToCloud(localRewards, localCards);
             }
 
             // Load rewards from cloud
@@ -1171,9 +1208,6 @@ const App = (function () {
         setInterval(() => {
             renderRewards();
         }, 60 * 60 * 1000); // 1 hour
-
-        console.log('Credit Card Rewards Tracker initialized');
-        console.log('To test reset logic, run: App.testResetLogic()');
     }
 
     // Initialize when DOM is ready
