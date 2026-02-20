@@ -131,6 +131,20 @@
                         <tbody id="rewardsBody"></tbody>
                     </table>
                     <div class="rewards-cards" id="rewardsCards"></div>
+                    <div class="mobile-sort" id="rewardsMobileSort">
+                        <label for="rewardsSortSelect">Sort by:</label>
+                        <select id="rewardsSortSelect">
+                            <option value="nextReset-asc">Next Reset ▲</option>
+                            <option value="nextReset-desc">Next Reset ▼</option>
+                            <option value="title-asc">Reward A-Z</option>
+                            <option value="title-desc">Reward Z-A</option>
+                            <option value="cardName-asc">Card A-Z</option>
+                            <option value="amount-desc">Amount High-Low</option>
+                            <option value="amount-asc">Amount Low-High</option>
+                            <option value="claimed-asc">Unclaimed First</option>
+                            <option value="claimed-desc">Claimed First</option>
+                        </select>
+                    </div>
                     <div class="empty-state" id="emptyState">
                         <div class="empty-icon">🎁</div>
                         <h3>No rewards yet</h3>
@@ -202,6 +216,18 @@
                         <tbody id="cardsBody"></tbody>
                     </table>
                     <div class="cards-cards" id="cardsCards"></div>
+                    <div class="mobile-sort" id="cardsMobileSort">
+                        <label for="cardsSortSelect">Sort by:</label>
+                        <select id="cardsSortSelect">
+                            <option value="name-asc">Name A-Z</option>
+                            <option value="name-desc">Name Z-A</option>
+                            <option value="issuer-asc">Issuer A-Z</option>
+                            <option value="annualFee-desc">Fee High-Low</option>
+                            <option value="annualFee-asc">Fee Low-High</option>
+                            <option value="openDate-desc">Newest First</option>
+                            <option value="openDate-asc">Oldest First</option>
+                        </select>
+                    </div>
                     <div class="empty-state" id="emptyCardsState">
                         <div class="empty-icon">💳</div>
                         <h3>No cards yet</h3>
@@ -320,9 +346,11 @@
             </div>
             <form id="cardForm">
                 <input type="hidden" id="cardId">
-                <div class="form-group">
+                <div class="form-group autocomplete-group">
                     <label for="cardNameInput">Card Name <span class="required">*</span></label>
-                    <input type="text" id="cardNameInput" required placeholder="e.g., Chase Sapphire Preferred">
+                    <input type="text" id="cardNameInput" required placeholder="e.g., Chase Sapphire Preferred"
+                        autocomplete="off">
+                    <div class="autocomplete-dropdown" id="cardAutocomplete"></div>
                 </div>
                 <div class="form-group">
                     <label>Issuer</label>
@@ -675,6 +703,30 @@
         </div>
     </div>
 
+    <!-- Rewards Suggestion Modal -->
+    <div class="modal-overlay" id="rewardsSuggestionModal">
+        <div class="modal modal-wide">
+            <div class="modal-header">
+                <h2 id="rewardsSuggestionTitle">Add Rewards for <span id="rewardsSuggestionCardName"></span></h2>
+                <button type="button" class="modal-close" id="closeRewardsSuggestion">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="suggestion-hint">Select the rewards you'd like to track. You can edit the name, amount, and
+                    frequency before adding.</p>
+                <div class="suggestion-list" id="suggestionList"></div>
+                <div class="suggestion-empty hidden" id="suggestionEmpty">
+                    <p>No known rewards for this card.</p>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="skipSuggestionsBtn">Skip</button>
+                <button type="button" class="btn btn-primary" id="addSelectedRewardsBtn">
+                    <span class="btn-icon">+</span> Add Selected Rewards
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Delete Modal -->
     <div class="modal-overlay" id="deleteModal">
         <div class="modal modal-small">
@@ -700,6 +752,7 @@
     <script src="storage.js"></script>
     <script src="recurrence.js"></script>
     <script src="auth.js"></script>
+    <script src="cardDatabase.js"></script>
     <script src="app.js"></script>
     <script>
         if ('serviceWorker' in navigator) {

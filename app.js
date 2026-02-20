@@ -11,6 +11,8 @@ const App = (function () {
     let deleteRewardId = null;
     let deleteCardId = null;
     let useCloudStorage = false;
+    let pendingSuggestionCardName = null;
+    let pendingSuggestionRewards = [];
 
     // Sort state
     let rewardsSortField = 'nextReset';
@@ -107,7 +109,21 @@ const App = (function () {
             // Best Card Page
             categorySelect: document.getElementById('categorySelect'),
             bestCardResults: document.getElementById('bestCardResults'),
-            emptyBestCardState: document.getElementById('emptyBestCardState')
+            emptyBestCardState: document.getElementById('emptyBestCardState'),
+
+            // Mobile Sort
+            rewardsSortSelect: document.getElementById('rewardsSortSelect'),
+            cardsSortSelect: document.getElementById('cardsSortSelect'),
+
+            // Rewards Suggestion Modal
+            rewardsSuggestionModal: document.getElementById('rewardsSuggestionModal'),
+            rewardsSuggestionTitle: document.getElementById('rewardsSuggestionTitle'),
+            rewardsSuggestionCardName: document.getElementById('rewardsSuggestionCardName'),
+            closeRewardsSuggestion: document.getElementById('closeRewardsSuggestion'),
+            suggestionList: document.getElementById('suggestionList'),
+            suggestionEmpty: document.getElementById('suggestionEmpty'),
+            skipSuggestionsBtn: document.getElementById('skipSuggestionsBtn'),
+            addSelectedRewardsBtn: document.getElementById('addSelectedRewardsBtn')
         };
     }
 
@@ -189,6 +205,26 @@ const App = (function () {
             elements.clearFiltersBtn.addEventListener('click', clearCardFilters);
         }
 
+        // Mobile sort dropdowns
+        if (elements.rewardsSortSelect) {
+            elements.rewardsSortSelect.addEventListener('change', () => {
+                const [field, dir] = elements.rewardsSortSelect.value.split('-');
+                rewardsSortField = field;
+                rewardsSortDir = dir;
+                updateSortIndicators('rewardsTable', rewardsSortField, rewardsSortDir);
+                renderRewards();
+            });
+        }
+        if (elements.cardsSortSelect) {
+            elements.cardsSortSelect.addEventListener('change', () => {
+                const [field, dir] = elements.cardsSortSelect.value.split('-');
+                cardsSortField = field;
+                cardsSortDir = dir;
+                updateSortIndicators('cardsTable', cardsSortField, cardsSortDir);
+                renderCards();
+            });
+        }
+
         // Issuer selection (click to select one)
         document.querySelectorAll('.issuer-option').forEach(option => {
             option.addEventListener('click', () => {
@@ -234,6 +270,7 @@ const App = (function () {
                 closeRewardModal();
                 closeDeleteModal();
                 closeCardModal();
+                closeRewardsSuggestionModal();
             }
         });
 
@@ -246,6 +283,24 @@ const App = (function () {
         document.querySelectorAll('#cardsTable th.sortable').forEach(th => {
             th.addEventListener('click', () => handleCardsSort(th.dataset.sort));
         });
+
+        // Rewards suggestion modal
+        if (elements.closeRewardsSuggestion) {
+            elements.closeRewardsSuggestion.addEventListener('click', closeRewardsSuggestionModal);
+        }
+        if (elements.skipSuggestionsBtn) {
+            elements.skipSuggestionsBtn.addEventListener('click', closeRewardsSuggestionModal);
+        }
+        if (elements.addSelectedRewardsBtn) {
+            elements.addSelectedRewardsBtn.addEventListener('click', handleAddSelectedRewards);
+        }
+        if (elements.rewardsSuggestionModal) {
+            elements.rewardsSuggestionModal.addEventListener('click', (e) => {
+                if (e.target === elements.rewardsSuggestionModal) {
+                    closeRewardsSuggestionModal();
+                }
+            });
+        }
     }
 
     /**
@@ -749,6 +804,204 @@ const App = (function () {
     // Card Modal Functions
     // =====================
 
+    // =====================
+    // Card Autocomplete
+    // =====================
+
+    let autocompleteActive = false;
+    let autocompleteSelectedIndex = -1;
+    let autocompleteResults = [];
+
+    /**
+     * Initialize card name autocomplete
+     */
+    function initCardAutocomplete() {
+        const input = elements.formCardName;
+        const dropdown = document.getElementById('cardAutocomplete');
+        if (!input || !dropdown) return;
+
+        // Input event — search as user types
+        input.addEventListener('input', () => {
+            const query = input.value;
+            if (query.trim().length < 2) {
+                closeAutocomplete();
+                return;
+            }
+
+            autocompleteResults = CardDatabase.search(query);
+            if (autocompleteResults.length === 0) {
+                closeAutocomplete();
+                return;
+            }
+
+            renderAutocomplete(autocompleteResults);
+        });
+
+        // Keyboard navigation
+        input.addEventListener('keydown', (e) => {
+            if (!autocompleteActive) return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                autocompleteSelectedIndex = Math.min(autocompleteSelectedIndex + 1, autocompleteResults.length - 1);
+                highlightAutocompleteItem();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                autocompleteSelectedIndex = Math.max(autocompleteSelectedIndex - 1, 0);
+                highlightAutocompleteItem();
+            } else if (e.key === 'Enter' && autocompleteSelectedIndex >= 0) {
+                e.preventDefault();
+                selectAutocompleteItem(autocompleteResults[autocompleteSelectedIndex]);
+            } else if (e.key === 'Escape') {
+                closeAutocomplete();
+            }
+        });
+
+        // Close on click outside
+        document.addEventListener('click', (e) => {
+            if (!dropdown.contains(e.target) && e.target !== input) {
+                closeAutocomplete();
+            }
+        });
+    }
+
+    /**
+     * Render autocomplete dropdown items
+     */
+    function renderAutocomplete(results) {
+        const dropdown = document.getElementById('cardAutocomplete');
+        if (!dropdown) return;
+
+        autocompleteSelectedIndex = -1;
+        autocompleteActive = true;
+
+        dropdown.innerHTML = results.map((card, index) => {
+            const issuerInfo = getIssuerInfo(card.issuer);
+            const feeText = card.annualFee ? `$${card.annualFee}/yr` : 'No fee';
+            const partnerCount = (card.transferPartners || []).length;
+            const partnerText = partnerCount > 0 ? `${partnerCount} partner${partnerCount > 1 ? 's' : ''}` : '';
+            const rewardCount = (card.rewards || []).length;
+            const rewardText = rewardCount > 0 ? `${rewardCount} perk${rewardCount > 1 ? 's' : ''}` : '';
+            const networkText = card.network || '';
+            const ftfText = card.foreignTransactionFee === false ? 'No FTF' : '';
+
+            // Build cashback summary — show top 2 categories
+            const cashbackEntries = Object.entries(card.cashbackByCategory || {})
+                .filter(([, v]) => v > 0)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 2);
+            const cashbackText = cashbackEntries.map(([cat, pct]) => `${pct}% ${capitalizeFirst(cat)}`).join(', ');
+
+            return `
+                <div class="autocomplete-item" data-index="${index}">
+                    <div class="autocomplete-item-main">
+                        <span class="autocomplete-issuer-badge" style="background-color: ${issuerInfo.color}">${issuerInfo.letter}</span>
+                        <div class="autocomplete-item-text">
+                            <div class="autocomplete-item-name">${escapeHtml(card.name)}</div>
+                            <div class="autocomplete-item-details">
+                                <span class="autocomplete-fee">${feeText}</span>
+                                ${networkText ? `<span class="autocomplete-network">${networkText}</span>` : ''}
+                                ${cashbackText ? `<span class="autocomplete-cashback">${cashbackText}</span>` : ''}
+                                ${partnerText ? `<span class="autocomplete-partners">${partnerText}</span>` : ''}
+                                ${rewardText ? `<span class="autocomplete-rewards">${rewardText}</span>` : ''}
+                                ${ftfText ? `<span class="autocomplete-ftf">${ftfText}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        // Attach click handlers
+        dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+            item.addEventListener('mousedown', (e) => {
+                e.preventDefault(); // prevent blur
+                const idx = parseInt(item.dataset.index);
+                selectAutocompleteItem(results[idx]);
+            });
+        });
+
+        dropdown.classList.add('active');
+    }
+
+    /**
+     * Highlight the currently selected autocomplete item
+     */
+    function highlightAutocompleteItem() {
+        const dropdown = document.getElementById('cardAutocomplete');
+        if (!dropdown) return;
+
+        dropdown.querySelectorAll('.autocomplete-item').forEach((item, i) => {
+            item.classList.toggle('highlighted', i === autocompleteSelectedIndex);
+        });
+
+        // Scroll into view
+        const highlighted = dropdown.querySelector('.autocomplete-item.highlighted');
+        if (highlighted) {
+            highlighted.scrollIntoView({ block: 'nearest' });
+        }
+    }
+
+    /**
+     * Select an autocomplete item and autofill the card form
+     */
+    function selectAutocompleteItem(card) {
+        if (!card) return;
+
+        // Fill card name
+        elements.formCardName.value = card.name;
+
+        // Fill issuer
+        if (card.issuer) {
+            elements.formCardIssuer.value = card.issuer;
+            selectIssuer(card.issuer);
+        }
+
+        // Fill annual fee
+        if (card.annualFee !== undefined) {
+            elements.formCardAnnualFee.value = card.annualFee || '';
+        }
+
+        // Fill cashback categories
+        if (card.cashbackByCategory) {
+            populateCashbackFields(card.cashbackByCategory);
+        }
+
+        // Fill transfer partners
+        if (card.transferPartners) {
+            populateTransferPartnerFields(card.transferPartners);
+        }
+
+        // Build comprehensive notes from all available data
+        const notesParts = [];
+        if (card.notes) notesParts.push(card.notes);
+        if (card.network) notesParts.push(`Network: ${card.network}`);
+        if (card.rewardsType) notesParts.push(`Rewards type: ${card.rewardsType}`);
+        if (card.pointValue) notesParts.push(`Point value: ~${card.pointValue}¢ each`);
+        if (card.foreignTransactionFee === false) notesParts.push('No foreign transaction fee.');
+        else if (card.foreignTransactionFee === true) notesParts.push('Charges foreign transaction fee (typically 3%).');
+        if (card.creditNeeded) notesParts.push(`Credit needed: ${card.creditNeeded}`);
+        if (card.cardType) notesParts.push(`Card type: ${card.cardType}`);
+        if (card.signupBonus) notesParts.push(`Signup bonus: ${card.signupBonus}`);
+        elements.formCardNotes.value = notesParts.join('\n');
+
+        closeAutocomplete();
+    }
+
+    /**
+     * Close autocomplete dropdown
+     */
+    function closeAutocomplete() {
+        const dropdown = document.getElementById('cardAutocomplete');
+        if (dropdown) {
+            dropdown.classList.remove('active');
+            dropdown.innerHTML = '';
+        }
+        autocompleteActive = false;
+        autocompleteSelectedIndex = -1;
+        autocompleteResults = [];
+    }
+
     /**
      * Open the add card modal
      */
@@ -760,6 +1013,7 @@ const App = (function () {
         clearCashbackFields();
         clearTransferPartnerFields();
         clearIssuerSelection();
+        closeAutocomplete();
         elements.cardModal.classList.add('active');
         elements.formCardName.focus();
     }
@@ -803,6 +1057,7 @@ const App = (function () {
         if (!elements.cardModal) return;
         elements.cardModal.classList.remove('active');
         elements.cardForm.reset();
+        closeAutocomplete();
     }
 
     /**
@@ -850,6 +1105,14 @@ const App = (function () {
 
         closeCardModal();
         renderCards();
+
+        // If adding a new card (not editing), check for suggested rewards
+        if (!id) {
+            const dbCard = CardDatabase.getByName(cardData.name);
+            if (dbCard && dbCard.rewards && dbCard.rewards.length > 0) {
+                openRewardsSuggestionModal(cardData.name, dbCard.rewards);
+            }
+        }
     }
 
     /**
@@ -1239,8 +1502,8 @@ const App = (function () {
                         <td class="col-annual-fee">
                             <span>${feeDisplay}</span>
                         </td>
-                        <td class="col-notes">
-                            <span>${escapeHtml(card.notes) || '-'}</span>
+                        <td class="col-fee-date">
+                            <span>${card.openDate ? formatFeeDate(card.openDate) : '-'}</span>
                         </td>
                         <td class="col-actions">
                             <div class="action-buttons">
@@ -1509,6 +1772,15 @@ const App = (function () {
     }
 
     /**
+     * Format fee date - shows the month when annual fee is typically charged (same month as open date)
+     */
+    function formatFeeDate(openDateStr) {
+        if (!openDateStr) return '-';
+        const date = new Date(openDateStr + 'T00:00:00');
+        return date.toLocaleDateString('en-US', { month: 'short' });
+    }
+
+    /**
      * Escape HTML to prevent XSS
      * @param {string} text - Text to escape
      * @returns {string} Escaped text
@@ -1703,6 +1975,242 @@ const App = (function () {
         }
     }
 
+    // =====================
+    // Rewards Suggestion Modal
+    // =====================
+
+    /**
+     * Open the rewards suggestion modal after adding a card
+     * @param {string} cardName - Name of the card just added
+     * @param {Array} rewards - Array of reward objects from the database
+     */
+    function openRewardsSuggestionModal(cardName, rewards) {
+        if (!elements.rewardsSuggestionModal) return;
+
+        pendingSuggestionCardName = cardName;
+        // Deep-clone rewards so edits don't mutate the database
+        pendingSuggestionRewards = rewards.map(r => ({
+            ...r,
+            recurrence: { ...r.recurrence },
+            selected: true // all selected by default
+        }));
+
+        elements.rewardsSuggestionCardName.textContent = cardName;
+        renderRewardsSuggestions();
+
+        elements.rewardsSuggestionModal.classList.add('active');
+    }
+
+    /**
+     * Close the rewards suggestion modal
+     */
+    function closeRewardsSuggestionModal() {
+        if (!elements.rewardsSuggestionModal) return;
+        elements.rewardsSuggestionModal.classList.remove('active');
+        pendingSuggestionCardName = null;
+        pendingSuggestionRewards = [];
+    }
+
+    /**
+     * Render the editable reward suggestion rows
+     */
+    function renderRewardsSuggestions() {
+        const list = elements.suggestionList;
+        const empty = elements.suggestionEmpty;
+        if (!list) return;
+
+        if (pendingSuggestionRewards.length === 0) {
+            list.innerHTML = '';
+            if (empty) empty.classList.remove('hidden');
+            return;
+        }
+        if (empty) empty.classList.add('hidden');
+
+        list.innerHTML = pendingSuggestionRewards.map((reward, idx) => {
+            const recType = reward.recurrence.type;
+            const isCustom = recType === 'custom';
+            const interval = reward.recurrence.interval || 1;
+            const unit = reward.recurrence.unit || 'month';
+
+            return `
+                <div class="suggestion-item ${reward.selected ? 'selected' : ''}" data-index="${idx}">
+                    <div class="suggestion-item-header">
+                        <label class="suggestion-checkbox-label">
+                            <input type="checkbox" class="suggestion-checkbox" data-index="${idx}" ${reward.selected ? 'checked' : ''}>
+                            <span class="suggestion-item-name">${escapeHtml(reward.name)}</span>
+                        </label>
+                    </div>
+                    ${reward.description ? `<div class="suggestion-item-desc">${escapeHtml(reward.description)}</div>` : ''}
+                    <div class="suggestion-item-fields ${reward.selected ? '' : 'disabled'}">
+                        <div class="suggestion-field">
+                            <label>Name</label>
+                            <input type="text" class="suggestion-name-input" data-index="${idx}" value="${escapeHtml(reward.name)}" ${reward.selected ? '' : 'disabled'}>
+                        </div>
+                        <div class="suggestion-field suggestion-field-small">
+                            <label>Amount ($)</label>
+                            <input type="number" class="suggestion-amount-input" data-index="${idx}" value="${reward.amount || ''}" min="0" step="0.01" placeholder="0" ${reward.selected ? '' : 'disabled'}>
+                        </div>
+                        <div class="suggestion-field">
+                            <label>Frequency</label>
+                            <select class="suggestion-recurrence-input" data-index="${idx}" ${reward.selected ? '' : 'disabled'}>
+                                <option value="monthly" ${recType === 'monthly' ? 'selected' : ''}>Monthly</option>
+                                <option value="half-yearly" ${recType === 'half-yearly' ? 'selected' : ''}>Half-Yearly</option>
+                                <option value="yearly" ${recType === 'yearly' ? 'selected' : ''}>Yearly</option>
+                                <option value="custom" ${recType === 'custom' ? 'selected' : ''}>Custom</option>
+                            </select>
+                        </div>
+                        ${isCustom ? `
+                        <div class="suggestion-field suggestion-field-small">
+                            <label>Every</label>
+                            <input type="number" class="suggestion-interval-input" data-index="${idx}" value="${interval}" min="1" ${reward.selected ? '' : 'disabled'}>
+                        </div>
+                        <div class="suggestion-field">
+                            <label>Unit</label>
+                            <select class="suggestion-unit-input" data-index="${idx}" ${reward.selected ? '' : 'disabled'}>
+                                <option value="day" ${unit === 'day' ? 'selected' : ''}>Day(s)</option>
+                                <option value="week" ${unit === 'week' ? 'selected' : ''}>Week(s)</option>
+                                <option value="month" ${unit === 'month' ? 'selected' : ''}>Month(s)</option>
+                                <option value="year" ${unit === 'year' ? 'selected' : ''}>Year(s)</option>
+                            </select>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        // Attach event listeners
+        list.querySelectorAll('.suggestion-checkbox').forEach(cb => {
+            cb.addEventListener('change', (e) => {
+                const idx = parseInt(e.target.dataset.index);
+                pendingSuggestionRewards[idx].selected = e.target.checked;
+                // Toggle disabled state on fields
+                const item = e.target.closest('.suggestion-item');
+                item.classList.toggle('selected', e.target.checked);
+                const fields = item.querySelector('.suggestion-item-fields');
+                fields.classList.toggle('disabled', !e.target.checked);
+                fields.querySelectorAll('input, select').forEach(f => f.disabled = !e.target.checked);
+                updateAddSelectedCount();
+            });
+        });
+
+        list.querySelectorAll('.suggestion-name-input').forEach(input => {
+            input.addEventListener('input', (e) => {
+                const idx = parseInt(e.target.dataset.index);
+                pendingSuggestionRewards[idx].name = e.target.value;
+            });
+        });
+
+        list.querySelectorAll('.suggestion-amount-input').forEach(input => {
+            input.addEventListener('input', (e) => {
+                const idx = parseInt(e.target.dataset.index);
+                pendingSuggestionRewards[idx].amount = parseFloat(e.target.value) || 0;
+            });
+        });
+
+        list.querySelectorAll('.suggestion-recurrence-input').forEach(select => {
+            select.addEventListener('change', (e) => {
+                const idx = parseInt(e.target.dataset.index);
+                pendingSuggestionRewards[idx].recurrence.type = e.target.value;
+                // Re-render to show/hide custom fields
+                syncFieldsToPending();
+                renderRewardsSuggestions();
+            });
+        });
+
+        list.querySelectorAll('.suggestion-interval-input').forEach(input => {
+            input.addEventListener('input', (e) => {
+                const idx = parseInt(e.target.dataset.index);
+                pendingSuggestionRewards[idx].recurrence.interval = parseInt(e.target.value) || 1;
+            });
+        });
+
+        list.querySelectorAll('.suggestion-unit-input').forEach(select => {
+            select.addEventListener('change', (e) => {
+                const idx = parseInt(e.target.dataset.index);
+                pendingSuggestionRewards[idx].recurrence.unit = e.target.value;
+            });
+        });
+
+        updateAddSelectedCount();
+    }
+
+    /**
+     * Sync current field values into pendingSuggestionRewards before re-render
+     */
+    function syncFieldsToPending() {
+        const list = elements.suggestionList;
+        if (!list) return;
+
+        list.querySelectorAll('.suggestion-name-input').forEach(input => {
+            const idx = parseInt(input.dataset.index);
+            if (pendingSuggestionRewards[idx]) {
+                pendingSuggestionRewards[idx].name = input.value;
+            }
+        });
+        list.querySelectorAll('.suggestion-amount-input').forEach(input => {
+            const idx = parseInt(input.dataset.index);
+            if (pendingSuggestionRewards[idx]) {
+                pendingSuggestionRewards[idx].amount = parseFloat(input.value) || 0;
+            }
+        });
+    }
+
+    /**
+     * Update the "Add Selected" button text with count
+     */
+    function updateAddSelectedCount() {
+        const count = pendingSuggestionRewards.filter(r => r.selected).length;
+        if (elements.addSelectedRewardsBtn) {
+            elements.addSelectedRewardsBtn.innerHTML = `<span class="btn-icon">+</span> Add ${count} Selected Reward${count !== 1 ? 's' : ''}`;
+            elements.addSelectedRewardsBtn.disabled = count === 0;
+        }
+    }
+
+    /**
+     * Add selected rewards from the suggestion modal
+     */
+    function handleAddSelectedRewards() {
+        // Sync any changes from form fields
+        syncFieldsToPending();
+
+        const selected = pendingSuggestionRewards.filter(r => r.selected);
+        if (selected.length === 0) {
+            closeRewardsSuggestionModal();
+            return;
+        }
+
+        const cardName = pendingSuggestionCardName;
+
+        selected.forEach(reward => {
+            const recurrence = { type: reward.recurrence.type };
+            if (recurrence.type === 'custom') {
+                recurrence.interval = reward.recurrence.interval || 1;
+                recurrence.unit = reward.recurrence.unit || 'month';
+            }
+
+            const lastResetDate = Recurrence.formatDate(Recurrence.getLastResetDate(recurrence));
+
+            Storage.addReward({
+                title: reward.name,
+                cardName: cardName,
+                amount: reward.amount || 0,
+                description: reward.description || '',
+                recurrence: recurrence,
+                lastResetDate: lastResetDate
+            });
+        });
+
+        // Sync to cloud
+        syncToCloud();
+
+        closeRewardsSuggestionModal();
+        renderRewards();
+
+        // Switch to rewards tab so user sees the added rewards
+        switchToPage('rewards');
+    }
+
     /**
      * Initialize the application
      */
@@ -1730,6 +2238,7 @@ const App = (function () {
 
         renderRewards();
         renderCards();
+        initCardAutocomplete();
 
         // Set up daily check for resets (check every hour)
         setInterval(() => {
