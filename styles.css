@@ -2841,3 +2841,102 @@ form {
         margin: 8px;
     }
 }
+
+/* ===== Calendar Reminder Dropdown ===== */
+.calendar-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.btn-action.calendar:hover {
+    background-color: rgba(99, 102, 241, 0.1);
+}
+
+.calendar-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    z-index: 100;
+    min-width: 160px;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+.calendar-menu.open {
+    display: block;
+}
+
+.calendar-menu a {
+    display: block;
+    padding: 10px 14px;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-size: 0.88rem;
+    transition: background 0.15s ease;
+}
+
+.calendar-menu a:hover {
+    background: var(--bg-hover);
+}
+
+.calendar-menu a+a {
+    border-top: 1px solid var(--border-color);
+}
+
+/* Midnight theme */
+[data-theme="midnight"] .calendar-menu {
+    background: #1e293b;
+    border-color: rgba(148, 163, 184, 0.2);
+}
+
+[data-theme="midnight"] .calendar-menu a {
+    color: #f1f5f9;
+}
+
+[data-theme="midnight"] .calendar-menu a:hover {
+    background: rgba(99, 102, 241, 0.15);
+}
+
+/* ===== Footer Legal ===== */
+.footer-legal {
+    margin-top: 4px;
+    font-size: 0.78rem;
+}
+
+.footer-legal a {
+    color: var(--text-muted);
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 2px;
+}
+
+.footer-legal a:hover {
+    color: var(--primary-color);
+}
+
+/* ===== Disclaimer Modal ===== */
+.disclaimer-body {
+    max-height: 65vh;
+    overflow-y: auto;
+    line-height: 1.6;
+}
+
+.disclaimer-body h3 {
+    color: var(--text-primary);
+    font-size: 1rem;
+    margin: 20px 0 6px;
+}
+
+.disclaimer-body h3:first-of-type {
+    margin-top: 12px;
+}
+
+.disclaimer-body p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}

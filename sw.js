@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cc-rewards-v32';
+const CACHE_NAME = 'cc-rewards-v33';
 const urlsToCache = [
     './',
     './index.html',

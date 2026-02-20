@@ -130,7 +130,6 @@
                         </thead>
                         <tbody id="rewardsBody"></tbody>
                     </table>
-                    <div class="rewards-cards" id="rewardsCards"></div>
                     <div class="mobile-sort" id="rewardsMobileSort">
                         <label for="rewardsSortSelect">Sort by:</label>
                         <select id="rewardsSortSelect">
@@ -145,6 +144,7 @@
                             <option value="claimed-desc">Claimed First</option>
                         </select>
                     </div>
+                    <div class="rewards-cards" id="rewardsCards"></div>
                     <div class="empty-state" id="emptyState">
                         <div class="empty-icon">🎁</div>
                         <h3>No rewards yet</h3>
@@ -215,7 +215,6 @@
                         </thead>
                         <tbody id="cardsBody"></tbody>
                     </table>
-                    <div class="cards-cards" id="cardsCards"></div>
                     <div class="mobile-sort" id="cardsMobileSort">
                         <label for="cardsSortSelect">Sort by:</label>
                         <select id="cardsSortSelect">
@@ -228,6 +227,7 @@
                             <option value="openDate-asc">Oldest First</option>
                         </select>
                     </div>
+                    <div class="cards-cards" id="cardsCards"></div>
                     <div class="empty-state" id="emptyCardsState">
                         <div class="empty-icon">💳</div>
                         <h3>No cards yet</h3>
@@ -269,6 +269,7 @@
         <footer class="app-footer">
             <p id="syncStatus">Data saved locally in your browser</p>
             <p class="sync-hint hidden" id="syncHint">Sign in with Google to sync across devices</p>
+            <p class="footer-legal"><a href="#" id="openDisclaimerLink">Terms &amp; Disclaimer</a></p>
         </footer>
     </div>
 
@@ -741,6 +742,59 @@
             <div class="modal-actions">
                 <button type="button" class="btn btn-secondary" id="cancelDeleteBtn">Cancel</button>
                 <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Disclaimer Modal -->
+    <div class="modal-overlay" id="disclaimerModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Terms &amp; Disclaimer</h2>
+                <button type="button" class="modal-close" id="closeDisclaimerModal">&times;</button>
+            </div>
+            <div class="modal-body disclaimer-body">
+                <p><strong>Last updated:</strong> February 2026</p>
+
+                <h3>No Warranty</h3>
+                <p>This application ("Credit Card Rewards Tracker") is provided <strong>"as is"</strong> and <strong>"as
+                        available"</strong> without warranty of any kind, express or implied, including but not limited
+                    to the warranties of merchantability, fitness for a particular purpose, and non-infringement.</p>
+
+                <h3>Disclaimer of Liability</h3>
+                <p>In no event shall the creator(s), contributor(s), or maintainer(s) of this application be liable for
+                    any claim, damages, or other liability, whether in an action of contract, tort, or otherwise,
+                    arising from, out of, or in connection with the application or the use or other dealings in the
+                    application. This includes, but is not limited to, any direct, indirect, incidental, special,
+                    consequential, or punitive damages.</p>
+
+                <h3>Not Financial Advice</h3>
+                <p>The information provided by this application — including credit card details, rewards data, cashback
+                    percentages, annual fees, and benefit descriptions — is for <strong>informational and personal
+                        tracking purposes only</strong>. It does not constitute financial, legal, or professional
+                    advice. Credit card terms change frequently; always verify information directly with your card
+                    issuer.</p>
+
+                <h3>Accuracy of Data</h3>
+                <p>While we strive to keep credit card information accurate and up-to-date, we make no representations
+                    or warranties of any kind about the completeness, accuracy, reliability, or availability of any data
+                    in this application. Any reliance you place on such information is strictly at your own risk.</p>
+
+                <h3>Personal Project</h3>
+                <p>This is an open-source personal project created for convenience and educational purposes. It is not
+                    affiliated with, endorsed by, or associated with any credit card issuer, bank, or financial
+                    institution.</p>
+
+                <h3>Data Storage</h3>
+                <p>Your data is stored locally in your browser (localStorage) and optionally synced to your Google
+                    account via Firebase if you choose to sign in. We do not collect, sell, or share your personal data.
+                    You are responsible for the security of your own device and account.</p>
+
+                <h3>Use at Your Own Risk</h3>
+                <p>By using this application, you acknowledge and agree that you do so entirely at your own risk.</p>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-primary" id="acceptDisclaimerBtn">I Understand</button>
             </div>
         </div>
     </div>

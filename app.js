@@ -1325,6 +1325,17 @@ const App = (function () {
                                 onclick="App.openDeleteModal('${reward.id}')"
                                 title="Delete reward"
                             >🗑️</button>
+                            <div class="calendar-dropdown">
+                                <button 
+                                    class="btn-action calendar" 
+                                    onclick="this.nextElementSibling.classList.toggle('open')"
+                                    title="Add calendar reminder"
+                                >📅</button>
+                                <div class="calendar-menu">
+                                    <a href="#" onclick="event.preventDefault();App.addCalendarReminder('${reward.id}','google');this.parentElement.classList.remove('open')">Google Calendar</a>
+                                    <a href="#" onclick="event.preventDefault();App.addCalendarReminder('${reward.id}','ical');this.parentElement.classList.remove('open')">iCal / Outlook</a>
+                                </div>
+                            </div>
                         </div>
                     </td>
                 </tr>
@@ -1376,6 +1387,17 @@ const App = (function () {
                                 onclick="App.openDeleteModal('${reward.id}')"
                                 title="Delete"
                             >🗑️</button>
+                            <div class="calendar-dropdown">
+                                <button 
+                                    class="btn-action calendar" 
+                                    onclick="this.nextElementSibling.classList.toggle('open')"
+                                    title="Calendar reminder"
+                                >📅</button>
+                                <div class="calendar-menu">
+                                    <a href="#" onclick="event.preventDefault();App.addCalendarReminder('${reward.id}','google');this.parentElement.classList.remove('open')">Google Calendar</a>
+                                    <a href="#" onclick="event.preventDefault();App.addCalendarReminder('${reward.id}','ical');this.parentElement.classList.remove('open')">iCal / Outlook</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="card-details">
@@ -2211,6 +2233,182 @@ const App = (function () {
         switchToPage('rewards');
     }
 
+    // =====================
+    // Calendar Reminders
+    // =====================
+
+    /**
+     * Generate a recurring calendar event for a reward
+     * @param {string} rewardId - The reward ID
+     * @param {string} type - 'google' or 'ical'
+     */
+    function addCalendarReminder(rewardId, type) {
+        const reward = Storage.getRewardById(rewardId);
+        if (!reward) return;
+
+        const title = `Claim: ${reward.title}${reward.cardName ? ' (' + reward.cardName + ')' : ''}`;
+        const description = reward.description || `Remember to claim your ${reward.title} reward.`;
+        const amount = reward.amount ? ` — $${reward.amount.toFixed(2)}` : '';
+        const fullDesc = `${description}${amount}`;
+
+        // Get the next reset date as the event start (reminder should fire before reset)
+        const nextReset = Recurrence.calculateNextResetDate(reward);
+        // Set reminder 3 days before reset
+        const reminderDate = new Date(nextReset);
+        reminderDate.setDate(reminderDate.getDate() - 3);
+
+        // If reminder date already passed, use the next reset date itself
+        const now = new Date();
+        const eventDate = reminderDate > now ? reminderDate : nextReset;
+
+        // Build recurrence rule (RRULE)
+        const rrule = buildRRule(reward.recurrence);
+
+        if (type === 'google') {
+            openGoogleCalendar(title, fullDesc, eventDate, rrule);
+        } else {
+            downloadICalFile(title, fullDesc, eventDate, rrule, reward.id);
+        }
+    }
+
+    /**
+     * Build an iCal RRULE string from recurrence object
+     */
+    function buildRRule(recurrence) {
+        const { type, interval = 1, unit = 'month' } = recurrence;
+        switch (type) {
+            case 'monthly':
+                return 'RRULE:FREQ=MONTHLY;INTERVAL=1';
+            case 'half-yearly':
+                return 'RRULE:FREQ=MONTHLY;INTERVAL=6';
+            case 'yearly':
+                return 'RRULE:FREQ=YEARLY;INTERVAL=1';
+            case 'custom':
+                const freqMap = { day: 'DAILY', week: 'WEEKLY', month: 'MONTHLY', year: 'YEARLY' };
+                const freq = freqMap[unit] || 'MONTHLY';
+                return `RRULE:FREQ=${freq};INTERVAL=${interval}`;
+            default:
+                return 'RRULE:FREQ=MONTHLY;INTERVAL=1';
+        }
+    }
+
+    /**
+     * Format a date to Google Calendar format (YYYYMMDD for all-day events)
+     */
+    function toCalDateStr(date) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}${m}${d}`;
+    }
+
+    /**
+     * Open Google Calendar with pre-filled recurring event
+     */
+    function openGoogleCalendar(title, description, eventDate, rrule) {
+        const dateStr = toCalDateStr(eventDate);
+        const nextDay = new Date(eventDate);
+        nextDay.setDate(nextDay.getDate() + 1);
+        const endStr = toCalDateStr(nextDay);
+
+        const rruleClean = rrule.replace('RRULE:', '');
+
+        const params = new URLSearchParams({
+            action: 'TEMPLATE',
+            text: title,
+            dates: `${dateStr}/${endStr}`,
+            details: description,
+            recur: rruleClean
+        });
+
+        window.open(`https://calendar.google.com/calendar/render?${params.toString()}`, '_blank');
+    }
+
+    /**
+     * Generate and download an .ics file for iCal/Outlook
+     */
+    function downloadICalFile(title, description, eventDate, rrule, rewardId) {
+        const dateStr = toCalDateStr(eventDate);
+        const nextDay = new Date(eventDate);
+        nextDay.setDate(nextDay.getDate() + 1);
+        const endStr = toCalDateStr(nextDay);
+
+        const now = new Date();
+        const timestamp = toCalDateStr(now) + 'T' +
+            String(now.getHours()).padStart(2, '0') +
+            String(now.getMinutes()).padStart(2, '0') +
+            String(now.getSeconds()).padStart(2, '0');
+
+        const uid = `${rewardId}-${Date.now()}@cc-rewards-tracker`;
+
+        const icsContent = [
+            'BEGIN:VCALENDAR',
+            'VERSION:2.0',
+            'PRODID:-//CC Rewards Tracker//EN',
+            'CALSCALE:GREGORIAN',
+            'METHOD:PUBLISH',
+            'BEGIN:VEVENT',
+            `UID:${uid}`,
+            `DTSTAMP:${timestamp}`,
+            `DTSTART;VALUE=DATE:${dateStr}`,
+            `DTEND;VALUE=DATE:${endStr}`,
+            `SUMMARY:${title}`,
+            `DESCRIPTION:${description.replace(/\n/g, '\\n')}`,
+            rrule,
+            'BEGIN:VALARM',
+            'TRIGGER:-PT0M',
+            'ACTION:DISPLAY',
+            `DESCRIPTION:${title}`,
+            'END:VALARM',
+            'END:VEVENT',
+            'END:VCALENDAR'
+        ].join('\r\n');
+
+        const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${title.replace(/[^a-zA-Z0-9]/g, '_')}.ics`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // =====================
+    // Disclaimer Modal
+    // =====================
+
+    function initDisclaimerModal() {
+        const link = document.getElementById('openDisclaimerLink');
+        const modal = document.getElementById('disclaimerModal');
+        const closeBtn = document.getElementById('closeDisclaimerModal');
+        const acceptBtn = document.getElementById('acceptDisclaimerBtn');
+
+        if (!modal) return;
+
+        const closeDisclaimer = () => modal.classList.remove('active');
+
+        if (link) {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                modal.classList.add('active');
+            });
+        }
+        if (closeBtn) closeBtn.addEventListener('click', closeDisclaimer);
+        if (acceptBtn) acceptBtn.addEventListener('click', closeDisclaimer);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeDisclaimer();
+        });
+    }
+
+    // Close calendar menus when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.calendar-dropdown')) {
+            document.querySelectorAll('.calendar-menu.open').forEach(m => m.classList.remove('open'));
+        }
+    });
+
     /**
      * Initialize the application
      */
@@ -2239,6 +2437,7 @@ const App = (function () {
         renderRewards();
         renderCards();
         initCardAutocomplete();
+        initDisclaimerModal();
 
         // Set up daily check for resets (check every hour)
         setInterval(() => {
@@ -2281,6 +2480,7 @@ const App = (function () {
         openAddCardModal,
         openEditCardModal,
         openDeleteCardModal,
+        addCalendarReminder,
         testResetLogic,
         renderRewards,
         renderCards
